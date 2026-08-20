@@ -1,0 +1,91 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: rgba(32, 23, 18, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(175, 198, 232, 0.12);
+}
+
+.container {
+  @include container;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 76px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.brandIcon {
+  height: 44px;
+  width: 44px;
+  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(108, 147, 199, 0.15);
+  border-radius: 50%;
+  border: 1px solid rgba(175, 198, 232, 0.3);
+  color: $gold-soft;
+  font-family: $font-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.brandWord {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brandName {
+  font-family: $font-serif;
+  font-size: 19px;
+  letter-spacing: 0.01em;
+  color: $text-cream;
+}
+
+.brandTag {
+  margin-top: 3px;
+  font-size: 9.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: $gold-soft;
+  opacity: 0.75;
+}
+
+.navLinks {
+  display: none;
+  gap: 32px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: rgba(243, 245, 248, 0.85);
+
+  a {
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: $gold-soft;
+    }
+  }
+
+  @media (min-width: 900px) {
+    display: flex;
+  }
+}
+
+.headerCta {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: inline-flex;
+  }
+}

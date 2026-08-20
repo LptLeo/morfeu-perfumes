@@ -1,0 +1,111 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.hero {
+  background:
+    radial-gradient(ellipse 90% 60% at 15% -10%, rgba(108, 147, 199, 0.18), transparent 60%),
+    linear-gradient(180deg, $ink 0%, $ink-2 100%);
+  color: $text-cream;
+  padding: 64px 0 88px;
+  overflow: hidden;
+  position: relative;
+
+  @media (min-width: 860px) {
+    padding: 96px 0 120px;
+  }
+}
+
+.container {
+  @include container;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  align-items: center;
+
+  @media (min-width: 860px) {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 64px;
+  }
+}
+
+.heroCopy {
+  max-width: 560px;
+}
+
+.eyebrow {
+  @include eyebrow;
+  margin-bottom: 22px;
+}
+
+.title {
+  font-size: clamp(2.1rem, 6vw, 3.4rem);
+  line-height: 1.08;
+  color: $text-cream;
+  font-family: $font-serif;
+
+  em {
+    font-style: italic;
+    color: $gold-soft;
+  }
+}
+
+.lede {
+  margin-top: 22px;
+  font-size: 17px;
+  color: rgba(243, 245, 248, 0.78);
+  max-width: 480px;
+}
+
+.heroActions {
+  margin-top: 34px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.heroTrust {
+  margin-top: 36px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  font-size: 13.5px;
+  color: rgba(243, 245, 248, 0.65);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: $gold;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.heroVisual {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: $radius-l;
+  background:
+    linear-gradient(155deg, rgba(175, 198, 232, 0.14), rgba(168, 103, 46, 0.18)),
+    $ink-2;
+  border: 1px solid rgba(175, 198, 232, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+  box-shadow: $shadow-1;
+
+  .phLabel {
+    color: $gold-soft;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    max-width: 260px;
+  }
+}

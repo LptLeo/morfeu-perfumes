@@ -1,0 +1,77 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.sectionTint {
+  background: var(--parchment-2);
+  padding: 88px 0;
+  position: relative;
+}
+
+.container {
+  @include container;
+}
+
+.faqList {
+  max-width: 760px;
+}
+
+.faqItem {
+  border-bottom: 1px solid $sand;
+}
+
+.faqQ {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 4px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: $font-serif;
+  font-size: 17px;
+  color: $text-ink;
+  cursor: pointer;
+
+  .plus {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $wine;
+    font-size: 20px;
+    font-weight: 400;
+    transition: transform 0.2s ease;
+  }
+}
+
+.open {
+  .plus {
+    transform: rotate(45deg);
+  }
+}
+
+.faqA {
+  /* Técnica CSS pura: grid-template-rows anima de 0fr para 1fr sem JS */
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s ease;
+  font-size: 14.5px;
+  color: $text-muted;
+  padding: 0 4px;
+}
+
+/* Quando .open está presente no pai, expande o conteúdo */
+.open .faqA {
+  grid-template-rows: 1fr;
+}
+
+.faqAInner {
+  /* overflow:hidden é obrigatório para a técnica de grid-template-rows funcionar */
+  overflow: hidden;
+  padding-bottom: 22px;
+  max-width: 620px;
+}

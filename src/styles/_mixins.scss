@@ -1,0 +1,36 @@
+@use './variables' as *;
+
+@mixin container {
+  max-width: $max-width-container;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@mixin eyebrow {
+  font-family: $font-sans;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $gold;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  &::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: $gold;
+    display: inline-block;
+  }
+}
+
+@mixin card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-1;
+  }
+}

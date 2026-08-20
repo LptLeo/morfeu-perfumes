@@ -1,0 +1,71 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.sectionDark {
+  background: $ink;
+  color: $text-cream;
+  padding: 88px 0;
+  position: relative;
+}
+
+.container {
+  @include container;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+
+  @media (min-width: 760px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+}
+
+.step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 22px;
+  padding: 28px 0;
+  border-top: 1px solid rgba(243, 245, 248, 0.14);
+
+  &:last-child {
+    border-bottom: 1px solid rgba(243, 245, 248, 0.14);
+  }
+
+  @media (min-width: 760px) {
+    border-top: none;
+    border-bottom: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  h3 {
+    color: $text-cream;
+    font-size: 19px;
+    font-weight: 500;
+    font-family: $font-serif;
+  }
+
+  p {
+    margin-top: 6px;
+    color: rgba(243, 245, 248, 0.66);
+    font-size: 14.5px;
+    max-width: 460px;
+  }
+}
+
+.stepNum {
+  font-family: $font-serif;
+  font-style: italic;
+  font-size: 34px;
+  color: $gold;
+  line-height: 1;
+  min-width: 52px;
+}

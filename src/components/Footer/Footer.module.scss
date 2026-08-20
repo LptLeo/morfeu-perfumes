@@ -1,0 +1,58 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.siteFooter {
+  background: #05070a;
+  color: rgba(243, 245, 248, 0.6);
+  padding: 48px 0 28px;
+  font-size: 13.5px;
+}
+
+.container {
+  @include container;
+}
+
+.footerTop {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding-bottom: 28px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(243, 245, 248, 0.1);
+
+  @media (min-width: 760px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.footerBrand {
+  font-family: $font-serif;
+  font-size: 20px;
+  color: $gold-soft;
+}
+
+.footerNote {
+  max-width: 420px;
+  margin-top: 6px;
+}
+
+.footerCta {
+  color: $gold-soft;
+  border-color: rgba(175, 198, 232, 0.4);
+
+  &:hover {
+    border-color: $gold;
+    color: $gold;
+  }
+}
+
+.footerBottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  color: rgba(243, 245, 248, 0.4);
+  font-size: 12.5px;
+}

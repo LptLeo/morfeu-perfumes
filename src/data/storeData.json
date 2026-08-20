@@ -1,0 +1,759 @@
+{
+  "storeInfo": {
+    "name": "Elixir n°7",
+    "tagline": "Decants árabes & importados",
+    "seo": {
+      "title": "Elteste | Decants de Perfumes Árabes, Contratipos e Importados",
+      "description": "Decants de perfumes árabes, contratipos e importados selecionados pela Elixir n°7. Experimente antes de investir no frasco — peça pelo WhatsApp."
+    },
+    "whatsapp": {
+      "number": "5531998406246",
+      "defaultMessage": "Olá, Marcos! Vim pelo site da Elixir n°7 e quero conhecer os perfumes disponíveis para decant.",
+      "suggestionMessage": "Olá, Marcos! Não encontrei no catálogo da Elixir n°7 o perfume que eu queria. Gostaria de sugerir: "
+    },
+    "sellerName": "Marcos"
+  },
+  "hero": {
+    "eyebrow": "Decants · Árabes, contratipos & importados",
+    "title": "Descubra seu próximo perfume favorito antes de investir no frasco inteiro.",
+    "titleEmphasis": "antes",
+    "description": "Fragrâncias árabes, contratipos e importados selecionados em decants — na medida certa para você experimentar na pele antes de decidir. Peça pelo WhatsApp.",
+    "primaryCta": "Quero escolher meu decant",
+    "secondaryCta": "Ver perfumes disponíveis",
+    "trustBadges": [
+      "Loja 100% online",
+      "Atendimento direto com Marcos",
+      "Curadoria de fragrâncias"
+    ]
+  },
+  "whyDecants": {
+    "eyebrow": "Por que decants",
+    "title": "Experimente primeiro. Ame depois.",
+    "description": "Comprar um frasco inteiro sem conhecer a fragrância na sua pele é um risco — o decant tira essa dúvida do caminho.",
+    "items": [
+      {
+        "id": "experimente",
+        "icon": "flask",
+        "title": "Experimente antes de investir",
+        "description": "Conheça a fragrância na sua própria pele antes de comprar o frasco original."
+      },
+      {
+        "id": "opcoes",
+        "icon": "layers",
+        "title": "Mais opções para explorar",
+        "description": "Acesse diferentes perfumes sem precisar comprar vários frascos cheios."
+      },
+      {
+        "id": "praticidade",
+        "icon": "pocket",
+        "title": "Praticidade no dia a dia",
+        "description": "Tamanho compacto para levar na bolsa, na mochila ou na mala de viagem."
+      },
+      {
+        "id": "descoberta",
+        "icon": "sparkles",
+        "title": "Descubra novas fragrâncias",
+        "description": "Experimente perfumes que talvez você nunca tivesse coragem de comprar no frasco inteiro."
+      }
+    ]
+  },
+  "catalog": {
+    "eyebrow": "Catálogo",
+    "title": "Escolha a fragrância que combina com você",
+    "description": "Todas as informações de marca, tamanho e preço são as que você cadastrar no arquivo de produtos.",
+    "categories": [
+      {
+        "id": "todos",
+        "label": "Todos"
+      },
+      {
+        "id": "importado",
+        "label": "Importados"
+      },
+      {
+        "id": "arabe",
+        "label": "Árabes & contratipos"
+      },
+      {
+        "id": "nacional",
+        "label": "Nacionais"
+      }
+    ],
+    "fallbackNote": {
+      "title": "Não encontrou o perfume que procurava?",
+      "description": "Nosso catálogo está sempre crescendo. Manda o nome pelo WhatsApp e a gente avalia incluir na loja.",
+      "ctaText": "Sugerir um perfume"
+    }
+  },
+  "products": [
+    {
+      "id": "le-male-elixir",
+      "name": "Le Male Elixir",
+      "brand": "Jean Paul Gaultier",
+      "categoria": "importado",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 30,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 50,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 90,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/le male elixir.jpg"
+    },
+    {
+      "id": "le-beau-le-parfum",
+      "name": "Le Beau Le Parfum",
+      "brand": "Jean Paul Gaultier",
+      "categoria": "importado",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 25,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 40,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 80,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/le beau le parfum.png"
+    },
+    {
+      "id": "le-male-le-parfum",
+      "name": "Le Male Le Parfum",
+      "brand": "Jean Paul Gaultier",
+      "categoria": "importado",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 25,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 45,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 84,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/le male le parfum.jpg"
+    },
+    {
+      "id": "le-beau-paradise-garden",
+      "name": "Le Beau Paradise Garden",
+      "brand": "Jean Paul Gaultier",
+      "categoria": "importado",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 25,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 40,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 80,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/le beau paradise garden.png"
+    },
+    {
+      "id": "the-most-wanted-edp-intense",
+      "name": "The Most Wanted Eau de Parfum Intense",
+      "brand": "Azzaro",
+      "categoria": "importado",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 21,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 32,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 60,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/azzaro.png"
+    },
+    {
+      "id": "invictus-elixir",
+      "name": "Invictus Elixir",
+      "brand": "Paco Rabanne",
+      "categoria": "importado",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 24,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 38,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 72,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/invictus.png"
+    },
+    {
+      "id": "phantom-elixir",
+      "name": "Phantom Elixir",
+      "brand": "Paco Rabanne",
+      "categoria": "importado",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 24,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 38,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 74,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/phantomelixir.png"
+    },
+    {
+      "id": "phantom-edt",
+      "name": "Phantom Eau de Toilette",
+      "brand": "Paco Rabanne",
+      "categoria": "importado",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 24,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 35,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 70,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/phantom edt.png"
+    },
+    {
+      "id": "liquid-brun",
+      "name": "Liquid Brun",
+      "brand": "French Avenue",
+      "categoria": "arabe",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 18,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 27,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 50,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/liquidbrun.png"
+    },
+    {
+      "id": "miraj-absolu",
+      "name": "Miraj Absolu",
+      "brand": "French Avenue",
+      "categoria": "arabe",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 18,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 28,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 55,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/miraj.png"
+    },
+    {
+      "id": "lion",
+      "name": "Lion",
+      "brand": "Rayhaan",
+      "categoria": "arabe",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 15,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 25,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 42,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/Lion.png"
+    },
+    {
+      "id": "opulent-dubai",
+      "name": "Opulent Dubai",
+      "brand": "Lattafa",
+      "categoria": "arabe",
+      "genero": "unissex",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 12,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 20,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 36,00"
+        }
+      ],
+      "description": "Compartilhável",
+      "image": "assets/produtos/opulent.png"
+    },
+    {
+      "id": "supremacy-collectors",
+      "name": "Supremacy Collector's Edition Pour Homme",
+      "brand": "Afnan",
+      "categoria": "arabe",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 18,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 30,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 55,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/afanan supremacy.png"
+    },
+    {
+      "id": "hawas-for-him",
+      "name": "Hawas for Him",
+      "brand": "Rasasi",
+      "categoria": "arabe",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 15,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 24,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 40,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/hawas.png"
+    },
+    {
+      "id": "club-de-nuit-intense",
+      "name": "Club de Nuit Intense Man Eau de Toilette",
+      "brand": "Armaf",
+      "categoria": "arabe",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 15,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 22,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 36,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/cn intense.png"
+    },
+    {
+      "id": "club-de-nuit-urban-elixir",
+      "name": "Club de Nuit Urban Man Elixir",
+      "brand": "Armaf",
+      "categoria": "arabe",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 15,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 25,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 36,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/cn elixir.png"
+    },
+    {
+      "id": "vintage-radio",
+      "name": "Vintage Radio",
+      "brand": "Lattafa",
+      "categoria": "arabe",
+      "genero": "unissex",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 15,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 22,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 35,00"
+        }
+      ],
+      "description": "Compartilhável",
+      "image": "assets/produtos/vintageradio.png"
+    },
+    {
+      "id": "qaed-al-fursan",
+      "name": "Qaed Al Fursan",
+      "brand": "Lattafa",
+      "categoria": "arabe",
+      "genero": "unissex",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 12,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 18,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 30,00"
+        }
+      ],
+      "description": "Compartilhável",
+      "image": "assets/produtos/qaed.png"
+    },
+    {
+      "id": "heaven-maison-viegas",
+      "name": "Heaven",
+      "brand": "Maison Viegas",
+      "categoria": "arabe",
+      "genero": "unissex",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 12,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 20,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 35,00"
+        }
+      ],
+      "description": "Contratipo inspirado no Imagination, de Louis Vuitton. Compartilhável.",
+      "image": "assets/produtos/heaven.png"
+    },
+    {
+      "id": "effervescent-lab8",
+      "name": "Effervescent",
+      "brand": "Lab8",
+      "categoria": "arabe",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 12,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 20,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 32,00"
+        }
+      ],
+      "description": "Contratipo inspirado no Vibrato, de Sospiro.",
+      "image": "assets/produtos/effervescent.png"
+    },
+    {
+      "id": "conexao-de-humor",
+      "name": "Conexão de Humor",
+      "brand": "Natura",
+      "categoria": "nacional",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 10,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 18,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 28,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/conexão.png"
+    },
+    {
+      "id": "egeo-bomb-black",
+      "name": "Egeo Bomb Black",
+      "brand": "O Boticário",
+      "categoria": "nacional",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 10,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 17,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 28,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/egeobombblack.png"
+    },
+    {
+      "id": "essencial-sentir",
+      "name": "Essencial Sentir",
+      "brand": "Natura",
+      "categoria": "nacional",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 10,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 16,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 26,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/sentir.png"
+    },
+    {
+      "id": "homem-dom",
+      "name": "Homem Dom",
+      "brand": "Natura",
+      "categoria": "nacional",
+      "genero": "masculino",
+      "sizes": [
+        {
+          "size": "3ml",
+          "price": "R$ 10,00"
+        },
+        {
+          "size": "5ml",
+          "price": "R$ 18,00"
+        },
+        {
+          "size": "10ml",
+          "price": "R$ 32,00"
+        }
+      ],
+      "description": null,
+      "image": "assets/produtos/homem dom.png"
+    }
+  ],
+  "howItWorks": {
+    "eyebrow": "Como funciona",
+    "title": "Do interesse ao decant na sua mão",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Escolha sua fragrância",
+        "description": "Navegue pelo catálogo e encontre o perfume que desperta sua curiosidade."
+      },
+      {
+        "step": 2,
+        "title": "Fale conosco pelo WhatsApp",
+        "description": "Clique no botão e envie seu pedido diretamente para a nossa equipe."
+      },
+      {
+        "step": 3,
+        "title": "Receba seu decant",
+        "description": "Combine os detalhes finais e finalize sua compra pelo WhatsApp."
+      }
+    ]
+  },
+  "testimonials": {
+    "eyebrow": "Quem já experimentou",
+    "title": "Avaliações de clientes",
+    "description": "Espaço reservado para depoimentos reais. Nenhuma avaliação abaixo é real — envie os depoimentos de clientes para substituir os placeholders.",
+    "items": [
+      {
+        "id": "1",
+        "stars": 5,
+        "comment": "[Espaço reservado para depoimento real do cliente]",
+        "author": "[Nome do cliente]",
+        "sub": "[Envie a foto, se houver]"
+      },
+      {
+        "id": "2",
+        "stars": 5,
+        "comment": "[Espaço reservado para depoimento real do cliente]",
+        "author": "[Nome do cliente]",
+        "sub": "[Envie a foto, se houver]"
+      },
+      {
+        "id": "3",
+        "stars": 5,
+        "comment": "[Espaço reservado para depoimento real do cliente]",
+        "author": "[Nome do cliente]",
+        "sub": "[Envie a foto, se houver]"
+      }
+    ],
+    "trustItems": [
+      {
+        "id": "1",
+        "icon": "shield",
+        "title": "Atendimento direto com Marcos",
+        "description": "Tire dúvidas e finalize seu pedido falando direto com o vendedor pelo WhatsApp."
+      },
+      {
+        "id": "2",
+        "icon": "award",
+        "title": "Loja especializada em decants",
+        "description": "Foco em perfumes importados e árabes, com curadoria de fragrâncias."
+      },
+      {
+        "id": "3",
+        "icon": "layers",
+        "title": "Experiência prática com fragrâncias",
+        "description": "[Complemente com um diferencial real da loja, se houver]"
+      }
+    ]
+  },
+  "faq": {
+    "eyebrow": "Dúvidas frequentes",
+    "title": "Antes de comprar, tire suas dúvidas",
+    "items": [
+      {
+        "id": "faq-1",
+        "question": "O que é um decant?",
+        "answer": "Um decant é uma pequena quantidade de um perfume original, transferida para um frasco menor — ideal para experimentar a fragrância antes de decidir pelo frasco inteiro."
+      },
+      {
+        "id": "faq-2",
+        "question": "Os perfumes são originais?",
+        "answer": "[Responda com a informação real sobre a origem/procedência dos perfumes utilizados nos decants.]"
+      },
+      {
+        "id": "faq-3",
+        "question": "Quais tamanhos estão disponíveis?",
+        "answer": "[Liste aqui os tamanhos de decant que a loja oferece, ex: 2ml, 5ml, 10ml.]"
+      },
+      {
+        "id": "faq-4",
+        "question": "Como faço meu pedido?",
+        "answer": "Escolha o perfume no catálogo acima e clique no botão do produto — você será direcionado direto para o WhatsApp com uma mensagem pronta para finalizar o pedido com a nossa equipe."
+      },
+      {
+        "id": "faq-5",
+        "question": "Vocês enviam para minha cidade?",
+        "answer": "[Informe as regiões ou formas de envio/retirada que a loja realmente oferece.]"
+      },
+      {
+        "id": "faq-6",
+        "question": "Posso comprar mais de um decant?",
+        "answer": "Sim — é só chamar no WhatsApp e montar seu pedido com quantos decants quiser."
+      }
+    ]
+  },
+  "ctaFinal": {
+    "title": "Pronto para descobrir sua próxima fragrância favorita?",
+    "description": "Fale com a gente agora pelo WhatsApp e monte seu pedido com quem entende de perfumaria.",
+    "buttonText": "Quero escolher meus decants"
+  },
+  "footer": {
+    "brand": "Elixir n°7",
+    "description": "Decants de perfumes árabes, contratipos e importados. Atendimento e pedidos direto pelo WhatsApp com Marcos.",
+    "buttonText": "Falar no WhatsApp",
+    "bottomTextLeft": "Elixir n°7. Loja 100% online.",
+    "bottomTextRight": "Feito para campanhas de tráfego pago."
+  }
+}

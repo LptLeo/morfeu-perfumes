@@ -1,0 +1,36 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.ctaFinal {
+  background:
+    radial-gradient(ellipse 70% 90% at 85% 20%, rgba(108, 147, 199, 0.22), transparent 60%),
+    linear-gradient(180deg, $ink, #05070a);
+  color: $text-cream;
+  padding: 96px 0;
+  text-align: center;
+  position: relative;
+}
+
+.container {
+  @include container;
+
+  h2 {
+    font-size: clamp(1.9rem, 5vw, 2.9rem);
+    max-width: 680px;
+    margin: 0 auto;
+    color: $text-cream;
+    font-family: $font-serif;
+    line-height: 1.15;
+  }
+
+  p {
+    margin: 18px auto 0;
+    max-width: 480px;
+    color: rgba(243, 245, 248, 0.72);
+    font-size: 16px;
+  }
+
+  .ctaBtn {
+    margin-top: 34px;
+  }
+}

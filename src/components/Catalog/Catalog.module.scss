@@ -1,0 +1,209 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.sectionTint {
+  background: var(--parchment-2);
+  padding: 88px 0;
+  position: relative;
+}
+
+.container {
+  @include container;
+}
+
+.catalogToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 34px;
+}
+
+.filterChip {
+  padding: 9px 18px;
+  border-radius: $radius-full;
+  border: 1px solid $sand;
+  background: var(--parchment);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: $text-muted;
+  transition: all 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #b5bcc7;
+  }
+
+  &[aria-pressed="true"],
+  &.active {
+    background: $ink;
+    color: $text-cream;
+    border-color: $ink;
+  }
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 26px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (min-width: 1000px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.productCard {
+  background: var(--parchment);
+  border-radius: $radius-m;
+  overflow: hidden;
+  border: 1px solid $sand;
+  display: flex;
+  flex-direction: column;
+  @include card-hover;
+}
+
+.productMedia {
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(155deg, var(--parchment-2), $sand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .phLabel {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: $text-muted;
+    text-align: center;
+    padding: 0 20px;
+    letter-spacing: 0.02em;
+  }
+}
+
+.productBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: $ink;
+  color: $gold-soft;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: $radius-full;
+}
+
+.productBody {
+  padding: 20px 20px 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.productBrand {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $gold;
+}
+
+.productName {
+  font-size: 19px;
+  margin-top: 6px;
+  color: $text-ink;
+  font-family: $font-serif;
+}
+
+.productDesc {
+  margin-top: 10px;
+  font-size: 13.5px;
+  color: $text-muted;
+  flex: 1;
+}
+
+.productSizes {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.productSizeRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 13.5px;
+  padding-bottom: 5px;
+  border-bottom: 1px dotted $sand;
+
+  .sz {
+    color: $text-muted;
+    font-weight: 600;
+  }
+
+  .pr {
+    font-family: $font-serif;
+    font-size: 16px;
+    color: $text-ink;
+  }
+}
+
+.productPriceNote {
+  font-size: 12px;
+  color: $text-muted;
+  margin-top: 12px;
+  flex: 1;
+}
+
+.productFooter {
+  margin-top: 16px;
+}
+
+.catalogNote {
+  margin-top: 36px;
+  padding: 28px 26px;
+  border: 1px dashed $sand;
+  border-radius: $radius-m;
+  text-align: center;
+  background: var(--parchment);
+
+  h3 {
+    font-size: 19px;
+    color: $text-ink;
+    font-family: $font-serif;
+  }
+
+  p {
+    margin-top: 8px;
+    font-size: 14px;
+    color: $text-muted;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .sugestaoBtn {
+    margin-top: 18px;
+    color: $wine;
+    border-color: $wine;
+
+    &:hover {
+      background: rgba(168, 103, 46, 0.08);
+      border-color: $wine-hover;
+      color: $wine-hover;
+    }
+  }
+}
