@@ -29,7 +29,6 @@ export const Header: React.FC<HeaderProps> = ({ storeInfo }) => {
           <a href="#por-que">Por que decants</a>
           <a href="#catalogo">Catálogo</a>
           <a href="#como-funciona">Como funciona</a>
-          <a href="#depoimentos">Avaliações</a>
           <a href="#faq">Dúvidas</a>
         </nav>
 

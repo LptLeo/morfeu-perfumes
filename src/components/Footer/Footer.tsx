@@ -35,7 +35,7 @@ export const Footer: React.FC<FooterProps> = ({ footerData, whatsapp }) => {
           <span>
             © {currentYear} {footerData.bottomTextLeft}
           </span>
-          <span>{footerData.bottomTextRight}</span>
+          {footerData.bottomTextRight && <span>{footerData.bottomTextRight}</span>}
         </div>
       </div>
     </footer>

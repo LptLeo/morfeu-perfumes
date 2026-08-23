@@ -28,7 +28,7 @@
   padding: 26px;
 
   .stars {
-    color: $gold;
+    color: $gold-deep;
     font-size: 15px;
     letter-spacing: 2px;
   }
@@ -53,7 +53,7 @@
   }
 
   span {
-    font-size: 12px;
+    font-size: 13px;
     color: $text-muted;
   }
 }
@@ -67,47 +67,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 11px;
   color: $text-muted;
   text-align: center;
-}
-
-.trustStrip {
-  margin-top: 56px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-
-  @media (min-width: 760px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.trustItem {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  padding: 20px;
-  border-radius: $radius-m;
-  background: var(--parchment-2);
-
-  svg {
-    width: 22px;
-    height: 22px;
-    color: $wine;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  h4 {
-    font-size: 15px;
-    font-weight: 600;
-    font-family: $font-sans;
-  }
-
-  p {
-    margin-top: 4px;
-    font-size: 13px;
-    color: $text-muted;
-  }
 }

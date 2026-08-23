@@ -69,3 +69,45 @@
   line-height: 1;
   min-width: 52px;
 }
+
+.trustStrip {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+
+  @media (min-width: 760px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.trustItem {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: $radius-m;
+  background: rgba(243, 245, 248, 0.06);
+  border: 1px solid rgba(243, 245, 248, 0.12);
+
+  svg {
+    width: 22px;
+    height: 22px;
+    color: $gold-soft;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    font-family: $font-sans;
+    color: $text-cream;
+  }
+
+  p {
+    margin-top: 4px;
+    font-size: 13.5px;
+    color: rgba(243, 245, 248, 0.66);
+  }
+}

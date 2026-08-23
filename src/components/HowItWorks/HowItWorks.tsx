@@ -2,6 +2,7 @@ import React from 'react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { StoreData } from '@/types/store';
 import { StepItem } from './StepItem';
+import { TrustItem } from './TrustItem';
 import styles from './HowItWorks.module.scss';
 
 interface HowItWorksProps {
@@ -22,6 +23,14 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ data }) => {
             <StepItem key={step.step} item={step} />
           ))}
         </div>
+
+        {data.trustItems && data.trustItems.length > 0 && (
+          <div className={styles.trustStrip}>
+            {data.trustItems.map((item) => (
+              <TrustItem key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -81,6 +81,9 @@ export interface StoreData {
     primaryCta: string;
     secondaryCta: string;
     trustBadges: string[];
+    image: string | null;
+    logoImage: string | null;
+    fallbackText: string;
   };
   whyDecants: {
     eyebrow: string;
@@ -104,13 +107,13 @@ export interface StoreData {
     eyebrow: string;
     title: string;
     steps: StepItemData[];
+    trustItems: TrustItemData[];
   };
   testimonials: {
     eyebrow: string;
     title: string;
     description: string;
     items: TestimonialItem[];
-    trustItems: TrustItemData[];
   };
   faq: {
     eyebrow: string;

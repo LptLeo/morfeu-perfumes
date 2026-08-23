@@ -7,7 +7,8 @@
 }
 
 .eyebrow {
-  @include eyebrow;
+  /* Padrão: fundo claro usa o tom escuro do acento (WCAG AA) */
+  @include eyebrow($gold-deep);
 }
 
 .title {
@@ -26,6 +27,10 @@
 }
 
 .dark {
+  .eyebrow {
+    @include eyebrow($gold);
+  }
+
   .description {
     color: rgba(243, 245, 248, 0.68);
   }

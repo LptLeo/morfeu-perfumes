@@ -3,13 +3,13 @@
     "name": "Elixir n°7",
     "tagline": "Decants árabes & importados",
     "seo": {
-      "title": "Elteste | Decants de Perfumes Árabes, Contratipos e Importados",
+      "title": "Elixir n°7 | Decants de Perfumes Árabes, Contratipos e Importados",
       "description": "Decants de perfumes árabes, contratipos e importados selecionados pela Elixir n°7. Experimente antes de investir no frasco — peça pelo WhatsApp."
     },
     "whatsapp": {
       "number": "5531998406246",
-      "defaultMessage": "Olá, Marcos! Vim pelo site da Elixir n°7 e quero conhecer os perfumes disponíveis para decant.",
-      "suggestionMessage": "Olá, Marcos! Não encontrei no catálogo da Elixir n°7 o perfume que eu queria. Gostaria de sugerir: "
+      "defaultMessage": "Olá! Vim pelo site da Elixir n°7 e quero conhecer os perfumes disponíveis para decant.",
+      "suggestionMessage": "Olá! Não encontrei no catálogo da Elixir n°7 o perfume que eu queria. Gostaria de sugerir: "
     },
     "sellerName": "Marcos"
   },
@@ -20,6 +20,9 @@
     "description": "Fragrâncias árabes, contratipos e importados selecionados em decants — na medida certa para você experimentar na pele antes de decidir. Peça pelo WhatsApp.",
     "primaryCta": "Quero escolher meu decant",
     "secondaryCta": "Ver perfumes disponíveis",
+    "image": null,
+    "logoImage": "/favicon.svg",
+    "fallbackText": "Elixir n°7 — Decants árabes & importados",
     "trustBadges": [
       "Loja 100% online",
       "Atendimento direto com Marcos",
@@ -60,7 +63,7 @@
   "catalog": {
     "eyebrow": "Catálogo",
     "title": "Escolha a fragrância que combina com você",
-    "description": "Todas as informações de marca, tamanho e preço são as que você cadastrar no arquivo de produtos.",
+    "description": "Decants de 3ml, 5ml e 10ml dos perfumes mais desejados. Escolha o tamanho e peça pelo WhatsApp.",
     "categories": [
       {
         "id": "todos",
@@ -658,34 +661,6 @@
         "title": "Receba seu decant",
         "description": "Combine os detalhes finais e finalize sua compra pelo WhatsApp."
       }
-    ]
-  },
-  "testimonials": {
-    "eyebrow": "Quem já experimentou",
-    "title": "Avaliações de clientes",
-    "description": "Espaço reservado para depoimentos reais. Nenhuma avaliação abaixo é real — envie os depoimentos de clientes para substituir os placeholders.",
-    "items": [
-      {
-        "id": "1",
-        "stars": 5,
-        "comment": "[Espaço reservado para depoimento real do cliente]",
-        "author": "[Nome do cliente]",
-        "sub": "[Envie a foto, se houver]"
-      },
-      {
-        "id": "2",
-        "stars": 5,
-        "comment": "[Espaço reservado para depoimento real do cliente]",
-        "author": "[Nome do cliente]",
-        "sub": "[Envie a foto, se houver]"
-      },
-      {
-        "id": "3",
-        "stars": 5,
-        "comment": "[Espaço reservado para depoimento real do cliente]",
-        "author": "[Nome do cliente]",
-        "sub": "[Envie a foto, se houver]"
-      }
     ],
     "trustItems": [
       {
@@ -699,14 +674,14 @@
         "icon": "award",
         "title": "Loja especializada em decants",
         "description": "Foco em perfumes importados e árabes, com curadoria de fragrâncias."
-      },
-      {
-        "id": "3",
-        "icon": "layers",
-        "title": "Experiência prática com fragrâncias",
-        "description": "[Complemente com um diferencial real da loja, se houver]"
       }
     ]
+  },
+  "testimonials": {
+    "eyebrow": "Quem já experimentou",
+    "title": "Avaliações de clientes",
+    "description": "Depoimentos reais de quem já experimentou os decants da Elixir n°7.",
+    "items": []
   },
   "faq": {
     "eyebrow": "Dúvidas frequentes",
@@ -720,12 +695,12 @@
       {
         "id": "faq-2",
         "question": "Os perfumes são originais?",
-        "answer": "[Responda com a informação real sobre a origem/procedência dos perfumes utilizados nos decants.]"
+        "answer": "Sim. Trabalhamos apenas com fragrâncias selecionadas e de procedência confiável, transferidas com cuidado para os frascos de decant. Qualquer dúvida sobre a origem, é só falar com a gente pelo WhatsApp."
       },
       {
         "id": "faq-3",
         "question": "Quais tamanhos estão disponíveis?",
-        "answer": "[Liste aqui os tamanhos de decant que a loja oferece, ex: 2ml, 5ml, 10ml.]"
+        "answer": "Trabalhamos com decants de 3ml, 5ml e 10ml — tamanhos ideais para experimentar na pele e para levar na bolsa ou na viagem."
       },
       {
         "id": "faq-4",
@@ -735,7 +710,7 @@
       {
         "id": "faq-5",
         "question": "Vocês enviam para minha cidade?",
-        "answer": "[Informe as regiões ou formas de envio/retirada que a loja realmente oferece.]"
+        "answer": "Sim! Ao finalizar o pedido pelo WhatsApp, combinamos a melhor forma de envio ou retirada para você."
       },
       {
         "id": "faq-6",
@@ -754,6 +729,6 @@
     "description": "Decants de perfumes árabes, contratipos e importados. Atendimento e pedidos direto pelo WhatsApp com Marcos.",
     "buttonText": "Falar no WhatsApp",
     "bottomTextLeft": "Elixir n°7. Loja 100% online.",
-    "bottomTextRight": "Feito para campanhas de tráfego pago."
+    "bottomTextRight": ""
   }
 }

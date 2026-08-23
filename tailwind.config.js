@@ -18,6 +18,7 @@ export default {
         gold: {
           DEFAULT: '#6C93C7',
           soft: '#AFC6E8',
+          deep: '#44689C',
         },
         wine: {
           DEFAULT: '#A8672E',

@@ -48,11 +48,21 @@ export const Hero: React.FC<HeroProps> = ({ data, whatsapp }) => {
         </div>
 
         <div className={styles.heroVisual}>
-          <span className={styles.phLabel}>
-            FOTO DOS DECANTS / FRASCOS
-            <br />
-            (envie as imagens para substituir este espaço)
-          </span>
+          {data.image ? (
+            <img
+              className={styles.heroImg}
+              src={data.image.startsWith('/') ? data.image : `/${data.image}`}
+              alt="Decants de perfumes Elixir n°7"
+            />
+          ) : data.logoImage ? (
+            <img
+              className={styles.heroLogo}
+              src={data.logoImage.startsWith('/') ? data.logoImage : `/${data.logoImage}`}
+              alt="Logomarca Elixir n°7"
+            />
+          ) : (
+            <span className={styles.heroFallback}>{data.fallbackText}</span>
+          )}
         </div>
       </div>
     </section>

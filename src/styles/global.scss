@@ -7,6 +7,7 @@
   --parchment-2: #{$parchment-2};
   --gold: #{$gold};
   --gold-soft: #{$gold-soft};
+  --gold-deep: #{$gold-deep};
   --wine: #{$wine};
   --wine-soft: #{$wine-soft};
   --wine-hover: #{$wine-hover};
@@ -27,6 +28,37 @@
 
 html {
   scroll-behavior: smooth;
+  /* Compensa o header sticky (76px) nos saltos de âncora */
+  scroll-padding-top: 92px;
+}
+
+/* Scrollbar estilizada — Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #{$gold} var(--parchment-2);
+}
+
+/* Scrollbar estilizada — WebKit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--parchment-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, $gold, $gold-deep);
+  border-radius: $radius-full;
+  border: 3px solid var(--parchment-2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $gold-deep;
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--parchment-2);
 }
 
 body {
@@ -70,7 +102,9 @@ h1, h2, h3, h4 {
 
 :focus-visible {
   outline: 2px solid var(--gold);
-  outline-offset: 3px;
+  outline-offset: 2px;
+  /* Halo escuro garante contraste do anel tanto em seções claras quanto escuras */
+  box-shadow: 0 0 0 4px rgba(7, 9, 13, 0.85);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -6,13 +6,13 @@
   padding: 0 24px;
 }
 
-@mixin eyebrow {
+@mixin eyebrow($color: $gold) {
   font-family: $font-sans;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: $gold;
+  color: $color;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -21,7 +21,7 @@
     content: "";
     width: 22px;
     height: 1px;
-    background: $gold;
+    background: $color;
     display: inline-block;
   }
 }

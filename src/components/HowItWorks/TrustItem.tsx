@@ -1,7 +1,7 @@
 import React from 'react';
 import { ICON_MAP, ShieldCheckIcon } from '@/assets/icons';
 import { TrustItemData } from '@/types/store';
-import styles from './Testimonials.module.scss';
+import styles from './HowItWorks.module.scss';
 
 interface TrustItemProps {
   item: TrustItemData;

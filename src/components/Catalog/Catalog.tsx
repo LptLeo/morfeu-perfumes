@@ -13,12 +13,16 @@ interface CatalogProps {
   whatsapp: StoreData['storeInfo']['whatsapp'];
 }
 
+const INITIAL_VISIBLE = 9;
+const LOAD_STEP = 9;
+
 export const Catalog: React.FC<CatalogProps> = ({
   catalogData,
   products,
   whatsapp,
 }) => {
   const [activeFilter, setActiveFilter] = useState<ProductCategory>('todos');
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
   const filteredProducts = useMemo(() => {
     if (activeFilter === 'todos') {
@@ -26,6 +30,14 @@ export const Catalog: React.FC<CatalogProps> = ({
     }
     return products.filter((p) => p.categoria === activeFilter);
   }, [products, activeFilter]);
+
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const remainingCount = filteredProducts.length - visibleProducts.length;
+
+  const handleSelectFilter = (category: ProductCategory) => {
+    setActiveFilter(category);
+    setVisibleCount(INITIAL_VISIBLE);
+  };
 
   const suggestionWaUrl = buildWhatsAppUrl(
     whatsapp.number,
@@ -44,11 +56,11 @@ export const Catalog: React.FC<CatalogProps> = ({
         <FilterToolbar
           categories={catalogData.categories}
           activeFilter={activeFilter}
-          onSelectFilter={setActiveFilter}
+          onSelectFilter={handleSelectFilter}
         />
 
         <div className={styles.productGrid}>
-          {filteredProducts.map((product) => (
+          {visibleProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
@@ -56,6 +68,17 @@ export const Catalog: React.FC<CatalogProps> = ({
             />
           ))}
         </div>
+
+        {remainingCount > 0 && (
+          <div className={styles.loadMoreWrap}>
+            <Button
+              variant="outline"
+              onClick={() => setVisibleCount((c) => c + LOAD_STEP)}
+            >
+              Ver mais perfumes ({remainingCount})
+            </Button>
+          </div>
+        )}
 
         <div className={styles.catalogNote}>
           <h3>{catalogData.fallbackNote.title}</h3>
