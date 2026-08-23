@@ -6,6 +6,16 @@
   publish = "dist"
 
 # ─────────────────────────────────────────────────────────────────────────
+# API: funções Netlify expostas em caminho limpo.
+# IMPORTANTE: precisa vir ANTES do fallback SPA (redirects são avaliados
+# na ordem; /* engoliria /api/*).
+# ─────────────────────────────────────────────────────────────────────────
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# ─────────────────────────────────────────────────────────────────────────
 # SPA fallback: rotas do painel (/admin/*) servem o index.html.
 # Status 200 = rewrite interno (não redireciona a URL no navegador).
 # ─────────────────────────────────────────────────────────────────────────

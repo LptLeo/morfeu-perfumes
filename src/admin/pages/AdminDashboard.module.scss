@@ -75,3 +75,24 @@
     max-width: 560px;
   }
 }
+
+.quickLinks {
+  margin-top: 22px;
+
+  button {
+    padding: 12px 20px;
+    border: 1px solid $sand;
+    border-radius: 999px;
+    background: #fff;
+    font-weight: 700;
+    font-size: 14.5px;
+    color: inherit;
+    cursor: pointer;
+    transition: border-color .15s ease, box-shadow .15s ease;
+
+    &:hover {
+      border-color: #b5bcc7;
+      box-shadow: 0 4px 14px rgba(31,41,51,.08);
+    }
+  }
+}

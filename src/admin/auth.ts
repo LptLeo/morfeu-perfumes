@@ -1,6 +1,7 @@
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -36,6 +37,27 @@ export function watchAuth(callback: (user: User | null) => void): () => void {
 
 export async function logout(): Promise<void> {
   await signOut(getFirebaseAuth());
+}
+
+/**
+ * Reenvia o e-mail de verificação da conta logada.
+ * As regras do Firestore exigem email_verified == true para escritas.
+ */
+export async function resendVerificationEmail(): Promise<void> {
+  const user = getFirebaseAuth().currentUser;
+  if (!user) throw new Error('Sessão não encontrada.');
+  try {
+    await sendEmailVerification(user);
+  } catch (error) {
+    const code =
+      typeof error === 'object' && error !== null && 'code' in error
+        ? String((error as { code: unknown }).code)
+        : '';
+    if (code === 'auth/too-many-requests') {
+      throw new Error('E-mail já enviado recentemente. Aguarde alguns minutos.');
+    }
+    throw new Error('Não foi possível enviar o e-mail de verificação agora.');
+  }
 }
 
 /**

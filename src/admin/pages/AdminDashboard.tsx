@@ -32,9 +32,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ email }) => {
       <main className={styles.content}>
         <h1>Bem-vindo{email ? `, ${email}` : ''}</h1>
         <p>
-          Esta é a área administrativa. A gestão de produtos, pedidos e
-          depoimentos será construída aqui nas próximas etapas.
+          Área administrativa da loja. Comece pela gestão do catálogo:
         </p>
+        <nav className={styles.quickLinks} aria-label="Atalhos do painel">
+          <button type="button" onClick={() => navigate('/admin/produtos')}>
+            Gerenciar produtos
+          </button>
+        </nav>
       </main>
     </div>
   );
