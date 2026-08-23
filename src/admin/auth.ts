@@ -66,6 +66,10 @@ function friendlyError(error: unknown): string {
       return 'Login com Google cancelado antes de concluir.';
     case 'auth/popup-blocked':
       return 'O navegador bloqueou a janela do Google. Permita popups neste site e tente novamente.';
+    case 'auth/operation-not-allowed':
+      return 'Este método de login está desabilitado no console do Firebase (Authentication → Sign-in method).';
+    case 'auth/unauthorized-domain':
+      return 'Domínio não autorizado: adicione-o em Authentication → Settings → Authorized domains.';
     default:
       return 'Não foi possível concluir a operação. Tente novamente em instantes.';
   }
