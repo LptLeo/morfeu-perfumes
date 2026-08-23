@@ -17,4 +17,18 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    proxy: {
+      // Dev apenas: executa a function localmente (harness). Em produção o
+      // redirect /api/* → /.netlify/functions/* do netlify.toml resolve.
+      '/api': {
+        target: 'http://localhost:8787',
+        changeOrigin: false,
+        // silencioso quando o harness não está rodando
+        configure: (proxy) => {
+          proxy.on('error', () => {});
+        },
+      },
+    },
+  },
 });

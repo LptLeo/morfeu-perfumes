@@ -21,6 +21,9 @@ export const Button: React.FC<ButtonProps> = ({
   rel,
   icon,
   className = '',
+  // Padrão seguro: dentro de <form>, <button> sem type é submit implícito.
+  // Aqui o padrão é 'button' — quem quiser submit declara type="submit".
+  type = 'button',
   ...rest
 }) => {
   // Monta a classe concatenando apenas as que se aplicam — sem biblioteca extra
@@ -43,7 +46,7 @@ export const Button: React.FC<ButtonProps> = ({
   }
 
   return (
-    <button className={buttonClass} {...rest}>
+    <button type={type} className={buttonClass} {...rest}>
       {icon}
       {children}
     </button>

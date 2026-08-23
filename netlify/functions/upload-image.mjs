@@ -1,14 +1,15 @@
 /**
- * Netlify Function: upload de imagem para imgbb (admin autenticado)
- * 
- * Valida o ID Token do Firebase server-side (RS256 via chaves públicas do Google)
- * → verifica tipo/tamanho do arquivo
- * → repassa à imgbb com a IMGBB_KEY do ambiente
- * → retorna { url, deleteUrl }
- * 
- * Segurança: sem dependências externas; valida assinatura RSA-256 contra as
- * chaves públicas do Google (expostas em https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com)
- * Cacheia as chaves por 1h.
+ * Netlify Function (v2): upload de imagem para imgbb (admin autenticado)
+ *
+ * Fluxo:
+ *   1. Valida o ID Token do Firebase server-side (RS256 contra chaves públicas do Google)
+ *   2. Exige e-mail verificado
+ *   3. Valida tipo/tamanho do arquivo
+ *   4. Repassa à imgbb com a IMGBB_KEY do ambiente (nunca exposta ao browser)
+ *   5. Retorna { url, deleteUrl }
+ *
+ * Runtime: Netlify Functions v2 — recebe um Request padrão Web.
+ * Sem dependências além de `jose`; roda igual em Deno (produção) e Node ≥18 (testes locais).
  */
 
 import { createRemoteJWKSet, jwtVerify } from 'jose';
@@ -17,8 +18,12 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
 
 // Cache das chaves públicas do Google (atualização a cada 1h)
+// ⚠️ Endpoint correto p/ jose: .../v1/jwk/... devolve JWKS {keys:[...]}.
+// O espelho /metadata/x509/ devolve certificados PEM e NÃO é um JWKS.
 const GOOGLE_JWKS = createRemoteJWKSet(
-  new URL('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'),
+  new URL(
+    'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
+  ),
   {
     cooldownDuration: 1_000,
     cacheMaxAge: 3_600_000, // 1h
@@ -41,13 +46,15 @@ async function verifyFirebaseIdToken(token, projectId) {
     });
     return payload;
   } catch (err) {
-    throw new Error(`Token inválido: ${err.message}`);
+    throw new Error(`Token inválido: ${err?.message ?? err}`);
   }
 }
 
-export async function handler(event) {
-  // Só POST
-  if (event.httpMethod !== 'POST') {
+export async function handler(req) {
+  // Compatibilidade: no runtime v2 `req` é um Request (req.method);
+  // mantemos leitura tolerante caso algum wrapper passe o evento legado.
+  const method = req.method ?? req.httpMethod;
+  if (method !== 'POST') {
     return json(405, { error: 'Método não permitido' });
   }
 
@@ -57,12 +64,15 @@ export async function handler(event) {
     return json(500, { error: 'Configuração do servidor incompleta' });
   }
 
-  // Autenticação: Authorization: Bearer <ID_TOKEN>
-  const auth = event.headers.authorization ?? event.headers.Authorization;
-  if (!auth?.startsWith('Bearer ')) {
+  // ── Autenticação ──────────────────────────────────────────────────────
+  const authHeader =
+    typeof req.headers?.get === 'function'
+      ? req.headers.get('authorization')
+      : req.headers?.authorization ?? req.headers?.Authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
     return json(401, { error: 'Token de autenticação ausente' });
   }
-  const idToken = auth.slice(7);
+  const idToken = authHeader.slice(7);
 
   let claims;
   try {
@@ -71,17 +81,14 @@ export async function handler(event) {
     return json(401, { error: e.message });
   }
 
-  // Admin check: rule já garante admin, mas verificamos email verificado
   if (!claims.email_verified) {
     return json(403, { error: 'E-mail não verificado' });
   }
 
-  // Parse multipart
+  // ── Arquivo ───────────────────────────────────────────────────────────
   let file;
   try {
-    const form = await event.body.arrayBuffer();
-    const blob = new Blob([form]);
-    const formData = new FormData(new Response(blob));
+    const formData = await req.formData();
     file = formData.get('file');
     if (!file || typeof file === 'string') {
       return json(400, { error: 'Arquivo não enviado' });
@@ -90,26 +97,24 @@ export async function handler(event) {
     return json(400, { error: 'Formato multipart inválido' });
   }
 
-  // Valida tipo
-  const mime = file.type;
+  const mime = file.type || '';
   if (!ALLOWED_TYPES.includes(mime)) {
     return json(400, { error: 'Tipo de arquivo não permitido (use JPEG, PNG ou WebP)' });
   }
 
-  // Valida tamanho
   const arrayBuf = await file.arrayBuffer();
   if (arrayBuf.byteLength > MAX_BYTES) {
     return json(400, { error: `Arquivo excede ${MAX_BYTES / 1_048_576} MB` });
   }
 
-  // Envia à imgbb
+  // ── imgbb ─────────────────────────────────────────────────────────────
   const formImgbb = new FormData();
   formImgbb.append('image', new Blob([arrayBuf], { type: mime }), 'upload');
   try {
-    const res = await fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(process.env.IMGBB_KEY)}`, {
-      method: 'POST',
-      body: formImgbb,
-    });
+    const res = await fetch(
+      `https://api.imgbb.com/1/upload?key=${encodeURIComponent(IMGBB_KEY)}`,
+      { method: 'POST', body: formImgbb }
+    );
     if (!res.ok) throw new Error(`imgbb ${res.status}`);
     const jsonData = await res.json();
     if (!jsonData.success || !jsonData.data?.url) throw new Error('resposta imgbb inválida');
