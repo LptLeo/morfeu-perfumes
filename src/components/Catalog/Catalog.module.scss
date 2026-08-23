@@ -11,10 +11,7 @@
   @include container;
 }
 
-.catalogToolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.filtersWrap {
   margin-bottom: 34px;
 }
 
@@ -29,7 +26,7 @@
   transition: all 0.15s ease;
   cursor: pointer;
 
-  &:hover {
+  &:hover:not(:disabled) {
     border-color: #b5bcc7;
   }
 
@@ -38,6 +35,11 @@
     background: $ink;
     color: $text-cream;
     border-color: $ink;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
 
@@ -55,6 +57,65 @@
   }
 }
 
+/* ── Skeleton loading ────────────────────────────────────────────── */
+.skeletonCard {
+  background: var(--parchment);
+  border-radius: $radius-m;
+  border: 1px solid $sand;
+  overflow: hidden;
+
+  @include card-hover;
+}
+
+.skeletonMedia {
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(90deg, var(--parchment-2) 25%, $sand 50%, var(--parchment-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+}
+
+.skeletonTitle {
+  height: 24px;
+  background: linear-gradient(90deg, var(--parchment-2) 25%, $sand 50%, var(--parchment-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: $radius-s;
+  margin: 20px 20px 8px;
+}
+
+.skeletonSizes {
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeletonRow {
+  height: 36px;
+  background: linear-gradient(90deg, var(--parchment-2) 25%, $sand 50%, var(--parchment-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: $radius-s;
+}
+
+/* ── Error state ─────────────────────────────────────────────────── */
+.errorState {
+  text-align: center;
+  padding: 60px 20px;
+  color: $text-muted;
+
+  p {
+    margin-bottom: 18px;
+    font-size: 15px;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────── */
 .productCard {
   background: var(--parchment);
   border-radius: $radius-m;
@@ -78,6 +139,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
   }
 
   .phLabel {
@@ -145,7 +207,8 @@
   font-size: 19px;
   margin-top: 6px;
   color: $text-ink;
-  font-family: $font-serif;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .productDesc {
@@ -155,50 +218,101 @@
   flex: 1;
 }
 
+/* ── Tamanhos com scroll horizontal + indicador ─────────────────── */
 .productSizes {
   margin-top: 12px;
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-  flex: 1;
+  flex-direction: row;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  padding-right: 48px; /* espaço para o hint */
+  scrollbar-width: thin;
+  scrollbar-color: $sand transparent;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $sand;
+    border-radius: 3px;
+  }
 }
 
 .productSizeRow {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  font-size: 13.5px;
-  padding: 7px 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 84px;
+  padding: 8px 12px;
   border: 1px solid $sand;
   border-radius: $radius-s;
   background: var(--parchment);
   text-align: left;
+  scroll-snap-align: start;
+  flex-shrink: 0;
   transition: border-color 0.15s ease, background 0.15s ease;
 
   .sz {
+    font-size: 12px;
+    font-weight: 700;
     color: $text-muted;
-    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
 
   .pr {
+    margin-top: 2px;
     font-family: $font-serif;
     font-size: 16px;
+    font-weight: 700;
     color: $text-ink;
   }
 
   &:hover {
     border-color: #b5bcc7;
   }
+}
 
-  &[aria-pressed="true"] {
-    border-color: $ink;
-    background: rgba(108, 147, 199, 0.12);
+/* ── Indicador de scroll (bolinha com seta) ────────────────────── */
+.scrollHint {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: $ink;
+  color: $gold-soft;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 2;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 
-    .sz {
-      color: $text-ink;
-    }
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    transform: translateY(-50%) scale(1.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $gold;
+    outline-offset: 2px;
   }
 }
 
@@ -211,6 +325,38 @@
 
 .productFooter {
   margin-top: 16px;
+}
+
+.whatsappLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 18px;
+  font-family: $font-sans;
+  font-size: 15px;
+  font-weight: 700;
+  color: $ink;
+  background: linear-gradient(135deg, $gold-soft, $gold);
+  border: none;
+  border-radius: $radius-m;
+  box-shadow: 0 10px 24px rgba(108, 147, 199, 0.35);
+  transition: filter 0.15s ease, transform 0.15s ease;
+  justify-content: center;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    filter: brightness(1.06);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
 }
 
 .catalogNote {

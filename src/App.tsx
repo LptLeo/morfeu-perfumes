@@ -29,7 +29,6 @@ export const App: React.FC = () => {
 
         <Catalog
           catalogData={storeData.catalog}
-          products={storeData.products}
           whatsapp={storeData.storeInfo.whatsapp}
         />
 

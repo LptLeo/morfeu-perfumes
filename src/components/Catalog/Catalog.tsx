@@ -1,45 +1,140 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { Button } from '@/components/ui/Button';
-import { ProductCategory, StoreData } from '@/types/store';
+import { Product } from '@/types/store';
 import { buildWhatsAppUrl } from '@/utils/whatsapp';
 import { FilterToolbar } from './FilterToolbar';
 import { ProductCard } from './ProductCard';
+import { listProducts, listCategories, isFirebaseConfigured } from '@/lib/productsRepository';
 import styles from './Catalog.module.scss';
 
 interface CatalogProps {
-  catalogData: StoreData['catalog'];
-  products: StoreData['products'];
-  whatsapp: StoreData['storeInfo']['whatsapp'];
+  catalogData: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    fallbackNote: { title: string; description: string; ctaText: string };
+  };
+  whatsapp: { number: string; suggestionMessage: string };
 }
 
-const INITIAL_VISIBLE = 9;
-const LOAD_STEP = 9;
+interface State {
+  status: 'loading' | 'error' | 'ready';
+  products: Product[];
+  categories: string[];
+  error?: string;
+}
 
-export const Catalog: React.FC<CatalogProps> = ({
-  catalogData,
-  products,
-  whatsapp,
-}) => {
-  const [activeFilter, setActiveFilter] = useState<ProductCategory>('todos');
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+export const Catalog: React.FC<CatalogProps> = ({ catalogData, whatsapp }) => {
+  const [state, setState] = useState<State>({
+    status: isFirebaseConfigured() ? 'loading' : 'error',
+    products: [],
+    categories: ['Todos'],
+    error: isFirebaseConfigured() ? undefined : 'Firebase não configurado',
+  });
 
-  const filteredProducts = useMemo(() => {
-    if (activeFilter === 'todos') {
-      return products;
+  const [activeFilter, setActiveFilter] = useState('Todos');
+
+  // Carrega produtos e categorias do Firestore
+  const load = useCallback(async () => {
+    try {
+      const [products, categories] = await Promise.all([
+        listProducts(),
+        listCategories(),
+      ]);
+      setState({ status: 'ready', products, categories, error: undefined });
+    } catch (err) {
+      setState((s) => ({
+        status: 'error',
+        products: s.products, // mantém o que tinha (pode ser vazio no primeiro load)
+        categories: s.categories,
+        error: err instanceof Error ? err.message : 'Falha ao carregar catálogo',
+      }));
     }
-    return products.filter((p) => p.categoria === activeFilter);
-  }, [products, activeFilter]);
+  }, []);
 
-  const visibleProducts = filteredProducts.slice(0, visibleCount);
-  const remainingCount = filteredProducts.length - visibleProducts.length;
+  // Carrega na montagem
+  useEffect(() => {
+    if (isFirebaseConfigured()) {
+      load();
+    }
+  }, [load]);
 
-  const handleSelectFilter = (category: ProductCategory) => {
-    setActiveFilter(category);
-    setVisibleCount(INITIAL_VISIBLE);
-  };
+  // Filtro
+  const filteredProducts = state.products.filter((p) =>
+    activeFilter === 'Todos' || p.category === activeFilter
+  );
 
   const suggestionWaUrl = buildWhatsAppUrl(
+    whatsapp.number,
+    whatsapp.suggestionMessage
+  );
+
+  if (state.status === 'error') {
+    return (
+      <section className={styles.sectionTint} id="catalogo">
+        <div className={styles.container}>
+          <SectionHeading
+            eyebrow={catalogData.eyebrow}
+            title={catalogData.title}
+            description={catalogData.description}
+          />
+          <div className={styles.errorState}>
+            <p>{state.error}</p>
+            <Button variant="outline" onClick={load}>
+              Tentar novamente
+            </Button>
+          </div>
+          <div className={styles.catalogNote}>
+            <h3>{catalogData.fallbackNote.title}</h3>
+            <p>{catalogData.fallbackNote.description}</p>
+            <Button
+              variant="outline"
+              href={suggestionWaUrl}
+              target="_blank"
+              className={styles.sugestaoBtn}
+            >
+              {catalogData.fallbackNote.ctaText}
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Skeleton / Loading
+  if (state.status === 'loading') {
+    return (
+      <section className={styles.sectionTint} id="catalogo">
+        <div className={styles.container}>
+          <SectionHeading
+            eyebrow={catalogData.eyebrow}
+            title={catalogData.title}
+            description={catalogData.description}
+          />
+          <div className={styles.filtersWrap}>
+            <FilterToolbar categories={['Todos']} activeFilter="Todos" onSelectFilter={() => {}} disabled />
+          </div>
+          <div className={styles.productGrid}>
+            {[...Array(9)].map((_, i) => (
+              <div key={i} className={styles.skeletonCard}>
+                <div className={styles.skeletonMedia} />
+                <div className={styles.skeletonTitle} />
+                <div className={styles.skeletonSizes}>
+                  <div className={styles.skeletonRow} />
+                  <div className={styles.skeletonRow} />
+                  <div className={styles.skeletonRow} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Ready
+  const suggestionWaUrlReady = buildWhatsAppUrl(
     whatsapp.number,
     whatsapp.suggestionMessage
   );
@@ -54,13 +149,13 @@ export const Catalog: React.FC<CatalogProps> = ({
         />
 
         <FilterToolbar
-          categories={catalogData.categories}
+          categories={state.categories}
           activeFilter={activeFilter}
-          onSelectFilter={handleSelectFilter}
+          onSelectFilter={setActiveFilter}
         />
 
         <div className={styles.productGrid}>
-          {visibleProducts.map((product) => (
+          {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
@@ -69,23 +164,12 @@ export const Catalog: React.FC<CatalogProps> = ({
           ))}
         </div>
 
-        {remainingCount > 0 && (
-          <div className={styles.loadMoreWrap}>
-            <Button
-              variant="outline"
-              onClick={() => setVisibleCount((c) => c + LOAD_STEP)}
-            >
-              Ver mais perfumes ({remainingCount})
-            </Button>
-          </div>
-        )}
-
         <div className={styles.catalogNote}>
           <h3>{catalogData.fallbackNote.title}</h3>
           <p>{catalogData.fallbackNote.description}</p>
           <Button
             variant="outline"
-            href={suggestionWaUrl}
+            href={suggestionWaUrlReady}
             target="_blank"
             className={styles.sugestaoBtn}
           >
@@ -96,3 +180,5 @@ export const Catalog: React.FC<CatalogProps> = ({
     </section>
   );
 };
+
+export default Catalog;
