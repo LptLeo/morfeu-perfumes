@@ -14,7 +14,9 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function adminEmails() {
-      return ['marcosmorfeumachado@gmail.com'];
+      // ⚠️ Mantenha em sincronia com VITE_ADMIN_EMAILS (.env.local / Netlify).
+      // lptleo11: e-mail de desenvolvimento/testes — remover na entrega.
+      return ['marcosmorfeumachado@gmail.com', 'lptleo11@gmail.com'];
     }
 
     function isAdmin() {
