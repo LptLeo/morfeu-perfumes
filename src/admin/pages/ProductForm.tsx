@@ -123,13 +123,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
   };
 
   // ── validação / save ────────────────────────────────────────────────
+  // Linhas totalmente vazias (sobras do auto-add) não contam para validação.
+  const filledSizes = sizes.filter((s) => s.size.trim() !== '' || s.digits !== '');
   const sizesValid =
-    sizes.length > 0 &&
-    sizes.every((s) => s.size.trim() !== '' && Number(s.digits || '0') >= 0 && s.digits !== '');
+    filledSizes.length > 0 &&
+    filledSizes.every((s) => s.size.trim() !== '' && s.digits !== '');
 
   const nameError = touched && name.trim() === '' ? 'Informe o nome.' : null;
   const brandError = touched && brand.trim() === '' ? 'Informe a marca.' : null;
-  const sizesError = touched && !sizesValid ? 'Cada tamanho precisa de nome e preço.' : null;
+  const sizesError = touched && !sizesValid ? 'Cada opção precisa de tamanho e preço.' : null;
 
   const handleSizeChange = (idx: number, patch: Partial<SizeRow>) => {
     setSizes((rows) => rows.map((r, i) => (i === idx ? { ...r, ...patch } : r)));
@@ -138,6 +140,45 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
   const addSizeRow = () => setSizes((rows) => [...rows, { size: '', digits: '' }]);
   const removeSizeRow = (idx: number) =>
     setSizes((rows) => (rows.length > 1 ? rows.filter((_, i) => i !== idx) : rows));
+
+  const sizesFieldsetRef = useRef<HTMLFieldSetElement>(null);
+
+  /** Foca o input de tamanho da linha dada (após criar a próxima). */
+  const focusRow = (idx: number) => {
+    requestAnimationFrame(() => {
+      sizesFieldsetRef.current
+        ?.querySelector<HTMLInputElement>(`input[data-row="${idx}"][data-field="size"]`)
+        ?.focus();
+    });
+  };
+
+  /**
+   * Enter dentro das opções cria a PRÓXIMA linha em vez de submeter o form.
+   * Fluxo tipo planilha: "10ml" → tab/enter → preço → enter → nova linha.
+   */
+  const handleSizeKeyDown = (idx: number, e: React.KeyboardEvent) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    setSizes((rows) => {
+      const isLast = idx === rows.length - 1;
+      // linha atual vazia e é a última? nada a fazer (evita empilhar vazias)
+      if (isLast && rows[idx].size.trim() === '' && rows[idx].digits === '') return rows;
+      const next = isLast ? [...rows, { size: '', digits: '' }] : rows;
+      focusRow(idx + 1);
+      return next;
+    });
+  };
+
+  /** Última linha completa → prepara automaticamente uma nova vazia abaixo. */
+  useEffect(() => {
+    const last = sizes[sizes.length - 1];
+    if (last && last.size.trim() !== '' && last.digits !== '') {
+      setSizes((rows) =>
+        rows.length === sizes.length ? [...rows, { size: '', digits: '' }] : rows
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sizes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,7 +202,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
         brand: brand.trim(),
         category: category.trim() || 'Importado',
         genero,
-        sizes: sizes.map((s) => ({
+        sizes: filledSizes.map((s) => ({
           size: s.size.trim(),
           priceCents: maskPriceInput(s.digits).cents,
         })),
@@ -260,11 +301,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
             </label>
           </div>
 
-          {/* Tamanhos */}
-          <fieldset className={styles.sizesFieldset}>
+          {/* Opções de compra: cada linha é uma oferta tamanho × preço */}
+          <fieldset className={styles.sizesFieldset} ref={sizesFieldsetRef}>
             <legend>
               Opções de compra *{' '}
-              <small>(digite o preço como no Pix: cada dígito entra em centavos)</small>
+              <small>
+                uma oferta por linha (ex.: 10ml por R$ 10,00; 20ml por R$ 18,90). Enter cria a
+                próxima.
+              </small>
             </legend>
             {sizesError && <p className={styles.fieldError}>{sizesError}</p>}
             {sizes.map((row, idx) => {
@@ -275,18 +319,25 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
                     className={styles.sizeName}
                     value={row.size}
                     onChange={(e) => handleSizeChange(idx, { size: e.target.value })}
+                    onKeyDown={(e) => handleSizeKeyDown(idx, e)}
                     list="size-suggestions"
                     placeholder="10ml"
-                    aria-label={`Nome do tamanho ${idx + 1}`}
+                    aria-label={`Tamanho da opção ${idx + 1}`}
+                    data-row={idx}
+                    data-field="size"
                     disabled={busy}
                   />
                   <input
                     className={styles.sizePrice}
                     inputMode="numeric"
-                    value={masked.display === 'R$ 0,00' && row.digits === '' ? '' : masked.display}
-                    onChange={(e) => handleSizeChange(idx, { digits: e.target.value.replace(/\D/g, '').slice(0, 9) })}
+                    // campo vazio enquanto não há dígito (Intl usa NBSP; nunca compare strings formatadas)
+                    value={row.digits === '' ? '' : masked.display}
+                    onChange={(e) =>
+                      handleSizeChange(idx, { digits: e.target.value.replace(/\D/g, '').slice(0, 9) })
+                    }
+                    onKeyDown={(e) => handleSizeKeyDown(idx, e)}
                     placeholder="R$ 0,00"
-                    aria-label={`Preço do tamanho ${idx + 1}`}
+                    aria-label={`Preço da opção ${idx + 1}`}
                     disabled={busy}
                   />
                   <button
@@ -294,7 +345,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
                     className={styles.removeSizeBtn}
                     onClick={() => removeSizeRow(idx)}
                     disabled={busy || sizes.length === 1}
-                    aria-label={`Remover tamanho ${idx + 1}`}
+                    aria-label={`Remover opção ${idx + 1}`}
                   >
                     ×
                   </button>
@@ -307,7 +358,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
               <option value="10ml" />
             </datalist>
             <Button variant="outline" isCompact onClick={addSizeRow} disabled={busy}>
-              + Adicionar tamanho
+              + Adicionar opção
             </Button>
           </fieldset>
 
