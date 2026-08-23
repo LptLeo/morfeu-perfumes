@@ -1,0 +1,43 @@
+rules_version = '2';
+
+// ─────────────────────────────────────────────────────────────────────────
+// Elixir n°7 — Security Rules do Firestore
+//
+// IMPORTANTE: a autorização de admin é avaliada AQUI, no servidor do Google,
+// em cada request. O allowlist do frontend é apenas UX.
+//
+// ⚠️ Mantenha o e-mail abaixo igual ao VITE_ADMIN_EMAILS
+//    (.env.local local / Environment variables da Netlify).
+// ─────────────────────────────────────────────────────────────────────────
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function adminEmails() {
+      return ['marcosmorfeumachado@gmail.com'];
+    }
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in adminEmails();
+    }
+
+    // Catálogo público: a landing lê; só admin escreve.
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Configuração privada (ex.: key da imgbb no ciclo do CRUD).
+    match /config/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Deny-all por padrão para qualquer outra coleção.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
