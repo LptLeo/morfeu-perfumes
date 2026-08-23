@@ -1,24 +1,26 @@
-export type ProductCategory = 'todos' | 'importado' | 'arabe' | 'nacional';
 export type ProductGender = 'masculino' | 'feminino' | 'unissex';
 
 export interface ProductSize {
   size: string;
-  price: string;
+  priceCents: number;
 }
 
 export interface Product {
   id: string;
   name: string;
   brand: string;
-  categoria: 'importado' | 'arabe' | 'nacional';
+  category: string; // texto livre (alimenta filtros dinâmicos)
   genero: ProductGender;
   sizes: ProductSize[];
   description: string | null;
-  image: string | null;
+  image: string | null; // compat: landing usa 'image'
+  imageUrl: string | null;
+  imageFocus: { x: number; y: number; zoom: number } | null;
 }
 
+/** Opção de categoria para UI (mantido para compatibilidade) */
 export interface CategoryOption {
-  id: ProductCategory;
+  id: string;
   label: string;
 }
 
