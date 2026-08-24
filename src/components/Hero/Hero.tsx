@@ -13,13 +13,28 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ data, whatsapp }) => {
   const waUrl = buildWhatsAppUrl(whatsapp.number, whatsapp.defaultMessage);
 
+  // Render title with emphasis word highlighted
+  const renderTitle = (title: string, emphasis: string) => {
+    if (!emphasis || !title.includes(emphasis)) {
+      return <span>{title}</span>;
+    }
+    const parts = title.split(emphasis);
+    return (
+      <>
+        {parts[0]}
+        <em>{emphasis}</em>
+        {parts[1]}
+      </>
+    );
+  };
+
   return (
     <section className={styles.hero} id="topo">
       <div className={styles.container}>
         <div className={styles.heroCopy}>
           <span className={styles.eyebrow}>{data.eyebrow}</span>
           <h1 className={styles.title}>
-            Descubra seu próximo perfume favorito <em>{data.titleEmphasis}</em> de investir no frasco inteiro.
+            {renderTitle(data.title, data.titleEmphasis)}
           </h1>
           <p className={styles.lede}>{data.description}</p>
 
