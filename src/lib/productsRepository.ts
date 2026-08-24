@@ -7,36 +7,39 @@
  * - Falha do Firestore = estado "indisponível + retry" (sem dado velho)
  */
 
-import { initializeApp, type FirebaseApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, query, orderBy, type Firestore, type DocumentData } from 'firebase/firestore';
+import {
+  getFirestore,
+  getDocs,
+  query,
+  collection,
+  orderBy,
+  type Firestore,
+  type DocumentData,
+} from 'firebase/firestore';
+import { getFirebaseApp } from '@/lib/firebase';
 import type { Product } from '@/types/store';
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string | undefined,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string | undefined,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID as string | undefined,
-};
-
 function isConfigured() {
+  const config = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string | undefined,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string | undefined,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID as string | undefined,
+  };
   return Boolean(
-    firebaseConfig.apiKey &&
-    firebaseConfig.authDomain &&
-    firebaseConfig.projectId &&
-    firebaseConfig.appId
+    config.apiKey &&
+    config.authDomain &&
+    config.projectId &&
+    config.appId
   );
 }
 
-let _app: FirebaseApp | null = null;
 let _db: Firestore | null = null;
 
 export function getDb(): Firestore {
   if (!isConfigured()) throw new Error('Firebase não configurado');
-  if (!_app) {
-    _app = initializeApp(firebaseConfig);
-  }
   if (!_db) {
-    _db = getFirestore(_app);
+    _db = getFirestore(getFirebaseApp());
   }
   return _db;
 }

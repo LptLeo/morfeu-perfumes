@@ -31,18 +31,29 @@ let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 
 /**
- * Retorna a instância de Auth sob demanda (lazy), evitando erros quando
- * o .env.local ainda não foi preenchido.
+ * Retorna a instância do Firebase App (singleton).
+ * Útil para compartilhar a mesma instância entre Auth e Firestore.
  */
-export function getFirebaseAuth(): Auth {
+export function getFirebaseApp(): FirebaseApp {
   if (!isFirebaseConfigured()) {
     throw new Error(
       'Firebase não configurado. Copie .env.example para .env.local e preencha as credenciais.'
     );
   }
-  if (!auth) {
+  if (!app) {
     app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
+  }
+  return app;
+}
+
+/**
+ * Retorna a instância de Auth sob demanda (lazy), evitando erros quando
+ * o .env.local ainda não foi preenchido.
+ */
+export function getFirebaseAuth(): Auth {
+  if (!auth) {
+    const firebaseApp = getFirebaseApp();
+    auth = getAuth(firebaseApp);
     // Manter logado entre sessões (decisão do projeto).
     void setPersistence(auth, browserLocalPersistence);
   }
