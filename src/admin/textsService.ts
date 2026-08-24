@@ -14,7 +14,7 @@ const TEXTS_DOC_ID = 'content';
 
 let _db: Firestore | null = null;
 
-function getDb(): Firestore {
+export function getDb(): Firestore {
   if (!_db) {
     _db = getFirestore(getFirebaseApp());
   }

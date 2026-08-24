@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { getSiteTexts, type SiteTexts } from '../admin/textsService';
+import { getDb } from '../admin/textsService';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 interface SiteTextsContextValue {
   texts: SiteTexts | null;
@@ -30,7 +32,23 @@ export function SiteTextsProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    // Initial load
     loadTexts();
+    
+    // Set up real-time listener for Firestore changes
+    const db = getDb();
+    const ref = doc(db, 'site_texts', 'content');
+    
+    const unsubscribe = onSnapshot(ref, (snap) => {
+      if (snap.exists()) {
+        const data = snap.data() as SiteTexts;
+        setTexts(data);
+      }
+    }, (err) => {
+      console.error('Erro no listener de textos:', err);
+    });
+    
+    return () => unsubscribe();
   }, []);
 
   return (
