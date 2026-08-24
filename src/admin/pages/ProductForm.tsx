@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import type { AdminProduct } from '../productsService';
-import { createProduct, updateProduct } from '../productsService';
+import { createProduct, updateProduct, slugify } from '../productsService';
 import { maskPriceInput } from '../priceMask';
 import { getFirebaseAuth } from '@/lib/firebase';
 import { listCategories } from '@/lib/productsRepository';
@@ -102,13 +102,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  /** Sobe arquivo pendente à imgbb pela function; retorna URL final. */
+  /** Sobe arquivo pendente ao Cloudinary pela function; retorna URL final. */
   const uploadIfPending = async (): Promise<string | null> => {
     if (!pendingFile) return imageUrl;
     setSaveState('uploading');
     const token = (await getFirebaseAuth().currentUser?.getIdToken()) ?? null;
     if (!token) throw new Error('Sessão expirada — faça login novamente.');
     const form = new FormData();
+    // publicId determinístico pelo nome → permite apagar o arquivo depois
+    form.append('publicId', slugify(name.trim() || 'produto'));
     form.append('file', pendingFile);
     const res = await fetch('/api/upload-image', {
       method: 'POST',

@@ -1,34 +1,45 @@
 /**
- * Netlify Function (v2): upload de imagem para imgbb (admin autenticado)
+ * Netlify Function (v2): upload de imagem para Cloudinary (admin autenticado)
  *
  * Fluxo:
- *   1. Valida o ID Token do Firebase server-side (RS256 contra chaves públicas do Google)
+ *   1. Valida o ID Token do Firebase server-side (RS256 via chaves públicas do Google)
  *   2. Exige e-mail verificado
  *   3. Valida tipo/tamanho do arquivo
- *   4. Repassa à imgbb com a IMGBB_KEY do ambiente (nunca exposta ao browser)
- *   5. Retorna { url, deleteUrl }
+ *   4. Faz upload assinado ao Cloudinary (SHA-1 nativo do Node, sem SDK)
+ *   5. Retorna { url (já com f_auto,q_auto,w_800), publicId, deleteUrl }
  *
  * Runtime: Netlify Functions v2 — recebe um Request padrão Web.
- * Sem dependências além de `jose`; roda igual em Deno (produção) e Node ≥18 (testes locais).
+ * Segurança: sem dependências externas; assinatura HMAC calculada localmente.
  */
 
+import { createHash } from 'node:crypto';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
+const CLOUDINARY_FOLDER = 'elixir7/products';
 
-// Cache das chaves públicas do Google (atualização a cada 1h)
-// ⚠️ Endpoint correto p/ jose: .../v1/jwk/... devolve JWKS {keys:[...]}.
-// O espelho /metadata/x509/ devolve certificados PEM e NÃO é um JWKS.
+// Chaves públicas do Google (atualização a cada 1h)
 const GOOGLE_JWKS = createRemoteJWKSet(
   new URL(
     'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
   ),
-  {
-    cooldownDuration: 1_000,
-    cacheMaxAge: 3_600_000, // 1h
-  }
+  { cooldownDuration: 1_000, cacheMaxAge: 3_600_000 }
 );
+
+// Cache leve das credenciais (poupa re-leitura em cold starts)
+let CACHED_CREDS = null;
+function getCreds() {
+  if (CACHED_CREDS) return CACHED_CREDS;
+  const cloud = process.env.CLOUDINARY_CLOUD_NAME;
+  const key = process.env.CLOUDINARY_API_KEY;
+  const secret = process.env.CLOUDINARY_API_SECRET;
+  if (!cloud || !key || !secret) {
+    throw new Error('Credenciais Cloudinary não configuradas');
+  }
+  CACHED_CREDS = { cloud, key, secret };
+  return CACHED_CREDS;
+}
 
 function json(status, body) {
   return new Response(JSON.stringify(body), {
@@ -38,29 +49,33 @@ function json(status, body) {
 }
 
 async function verifyFirebaseIdToken(token, projectId) {
-  try {
-    const { payload } = await jwtVerify(token, GOOGLE_JWKS, {
-      issuer: `https://securetoken.google.com/${projectId}`,
-      audience: projectId,
-      clockTolerance: 10, // segundos
-    });
-    return payload;
-  } catch (err) {
-    throw new Error(`Token inválido: ${err?.message ?? err}`);
-  }
+  const { payload } = await jwtVerify(token, GOOGLE_JWKS, {
+    issuer: `https://securetoken.google.com/${projectId}`,
+    audience: projectId,
+    clockTolerance: 10,
+  });
+  return payload;
+}
+
+function signCloudinary(params, secret) {
+  const sorted = Object.keys(params)
+    .sort()
+    .map((k) => `${k}=${params[k]}`)
+    .join('&');
+  return createHash('sha1').update(sorted + secret).digest('hex');
+}
+
+/** URL de entrega já otimizada: WebP automático, qualidade auto, máx 800px. */
+function deliveryUrl(secureUrl) {
+  return secureUrl.replace('/upload/', '/upload/f_auto,q_auto,w_800/');
 }
 
 export async function handler(req) {
-  // Compatibilidade: no runtime v2 `req` é um Request (req.method);
-  // mantemos leitura tolerante caso algum wrapper passe o evento legado.
   const method = req.method ?? req.httpMethod;
-  if (method !== 'POST') {
-    return json(405, { error: 'Método não permitido' });
-  }
+  if (method !== 'POST') return json(405, { error: 'Método não permitido' });
 
-  const IMGBB_KEY = process.env.IMGBB_KEY;
   const PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
-  if (!IMGBB_KEY || !PROJECT_ID) {
+  if (!PROJECT_ID) {
     return json(500, { error: 'Configuração do servidor incompleta' });
   }
 
@@ -77,29 +92,26 @@ export async function handler(req) {
   let claims;
   try {
     claims = await verifyFirebaseIdToken(idToken, PROJECT_ID);
-  } catch (e) {
-    return json(401, { error: e.message });
+  } catch {
+    return json(401, { error: 'Token inválido' });
   }
+  if (!claims.email_verified) return json(403, { error: 'E-mail não verificado' });
 
-  if (!claims.email_verified) {
-    return json(403, { error: 'E-mail não verificado' });
-  }
-
-  // ── Arquivo ───────────────────────────────────────────────────────────
+  // ── Arquivo + publicId do formulário ─────────────────────────────────
   let file;
+  let requestedPublicId;
   try {
     const formData = await req.formData();
     file = formData.get('file');
-    if (!file || typeof file === 'string') {
-      return json(400, { error: 'Arquivo não enviado' });
-    }
+    requestedPublicId = formData.get('publicId');
   } catch {
     return json(400, { error: 'Formato multipart inválido' });
   }
+  if (!file || typeof file === 'string') return json(400, { error: 'Arquivo não enviado' });
 
   const mime = file.type || '';
   if (!ALLOWED_TYPES.includes(mime)) {
-    return json(400, { error: 'Tipo de arquivo não permitido (use JPEG, PNG ou WebP)' });
+    return json(400, { error: 'Tipo não permitido (use JPEG, PNG ou WebP)' });
   }
 
   const arrayBuf = await file.arrayBuffer();
@@ -107,20 +119,48 @@ export async function handler(req) {
     return json(400, { error: `Arquivo excede ${MAX_BYTES / 1_048_576} MB` });
   }
 
-  // ── imgbb ─────────────────────────────────────────────────────────────
-  const formImgbb = new FormData();
-  formImgbb.append('image', new Blob([arrayBuf], { type: mime }), 'upload');
+  // ── publicId: do form (slug do produto) ou fallback pelo nome/timestamp
+  const timestamp = Math.floor(Date.now() / 1000);
+  const rawPublicId = requestedPublicId || file.name?.replace(/\.\w+$/, '') || `upload-${timestamp}`;
+  const publicId = String(rawPublicId).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 120);
+
+  // ── Cloudinary: upload assinado ──────────────────────────────────────
+  let cloud, apiKey, secret;
+  try {
+    ({ cloud, key: apiKey, secret } = getCreds());
+  } catch (e) {
+    return json(500, { error: e.message });
+  }
+
+  const signature = signCloudinary(
+    { folder: CLOUDINARY_FOLDER, public_id: publicId, timestamp },
+    secret
+  );
+
+  const form = new FormData();
+  form.append('file', new Blob([arrayBuf], { type: mime }), `${publicId}.webp`);
+  form.append('api_key', apiKey);
+  form.append('timestamp', String(timestamp));
+  form.append('folder', CLOUDINARY_FOLDER);
+  form.append('public_id', publicId);
+  form.append('signature', signature);
+
   try {
     const res = await fetch(
-      `https://api.imgbb.com/1/upload?key=${encodeURIComponent(IMGBB_KEY)}`,
-      { method: 'POST', body: formImgbb }
+      `https://api.cloudinary.com/v1_1/${cloud}/image/upload`,
+      { method: 'POST', body: form }
     );
-    if (!res.ok) throw new Error(`imgbb ${res.status}`);
-    const jsonData = await res.json();
-    if (!jsonData.success || !jsonData.data?.url) throw new Error('resposta imgbb inválida');
-    return json(200, { url: jsonData.data.url, deleteUrl: jsonData.data.delete_url ?? null });
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      throw new Error(data.error?.message ?? `Cloudinary ${res.status}`);
+    }
+    return json(200, {
+      url: deliveryUrl(data.secure_url),
+      publicId: data.public_id,
+      deleteUrl: data.delete_url ?? null,
+    });
   } catch (err) {
-    console.error('imgbb error:', err);
+    console.error('Cloudinary error:', err);
     return json(502, { error: 'Falha ao enviar imagem ao provedor' });
   }
 }
