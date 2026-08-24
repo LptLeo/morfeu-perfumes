@@ -4,13 +4,13 @@
  * e loga no console do Netlify (visível em Netlify Dashboard > Functions > Logs)
  */
 
-export async function handler(event) {
-  if (event.httpMethod !== 'POST') {
+export async function handler(request) {
+  if (request.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
   }
 
   try {
-    const report = JSON.parse(event.body);
+    const report = await request.json();
     const cspReport = report['csp-report'] || report;
 
     // Log estruturado para fácil leitura no Netlify Dashboard
