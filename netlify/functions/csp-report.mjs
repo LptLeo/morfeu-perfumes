@@ -6,7 +6,7 @@
 
 export async function handler(event) {
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return new Response('Method Not Allowed', { status: 405 });
   }
 
   try {
@@ -31,10 +31,10 @@ export async function handler(event) {
     console.log('==============================');
 
     // Resposta 204 No Content (padrão para CSP reports)
-    return { statusCode: 204 };
+    return new Response(null, { status: 204 });
   } catch (error) {
     console.error('Erro ao processar CSP report:', error);
-    return { statusCode: 400, body: 'Bad Request' };
+    return new Response('Bad Request', { status: 400 });
   }
 }
 
