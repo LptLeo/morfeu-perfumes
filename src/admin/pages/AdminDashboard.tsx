@@ -32,11 +32,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ email }) => {
       <main className={styles.content}>
         <h1>Bem-vindo{email ? `, ${email}` : ''}</h1>
         <p>
-          Área administrativa da loja. Comece pela gestão do catálogo:
+          Área administrativa da loja. Comece pela gestão do catálogo ou textos:
         </p>
         <nav className={styles.quickLinks} aria-label="Atalhos do painel">
           <button type="button" onClick={() => navigate('/admin/produtos')}>
             Gerenciar produtos
+          </button>
+          <button type="button" onClick={() => navigate('/admin/textos')}>
+            Gerenciar textos
           </button>
         </nav>
       </main>

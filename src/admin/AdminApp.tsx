@@ -7,6 +7,7 @@ import { LoginPage } from './pages/LoginPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { AdminProducts } from './pages/AdminProducts';
 import { ProductForm } from './pages/ProductForm';
+import { AdminTexts } from './pages/AdminTexts';
 import type { AdminProduct } from './productsService';
 
 /**
@@ -142,12 +143,14 @@ export const AdminApp: React.FC = () => {
     );
   }
 
-  // ── Rotas de produtos ────────────────────────────────────────────────
+  // ── Rotas ────────────────────────────────────────────────
   const productsMatch = /^\/admin\/produtos(\/novo|\/([^/]+))?$/.exec(pathname);
   let content: React.ReactNode;
 
   if (pathname === '/admin' || pathname === '/admin/') {
     content = <AdminDashboard email={user!.email!} />;
+  } else if (pathname === '/admin/textos') {
+    content = <AdminTexts />;
   } else if (pathname === '/admin/produtos') {
     content = (
       <AdminProducts
