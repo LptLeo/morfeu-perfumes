@@ -37,6 +37,12 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // Textos do site (landing): leitura pública, escrita só admin.
+    match /site_texts/{docId} {
+      allow read: if true;
+      allow create, update: if isAdmin();
+    }
+
     // Deny-all por padrão para qualquer outra coleção.
     match /{document=**} {
       allow read, write: if false;
