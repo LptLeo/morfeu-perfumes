@@ -327,6 +327,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
                     aria-label={`Tamanho da opção ${idx + 1}`}
                     data-row={idx}
                     data-field="size"
+                    data-size-input="true"
                     disabled={busy}
                   />
                   <input
@@ -340,6 +341,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
                     onKeyDown={(e) => handleSizeKeyDown(idx, e)}
                     placeholder="R$ 0,00"
                     aria-label={`Preço da opção ${idx + 1}`}
+                    data-price-input="true"
                     disabled={busy}
                   />
                   <button

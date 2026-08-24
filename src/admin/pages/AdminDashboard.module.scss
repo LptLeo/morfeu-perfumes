@@ -18,6 +18,13 @@
   padding: 0 28px;
   background: $ink;
   border-bottom: 1px solid rgba(175, 198, 232, 0.12);
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    height: auto;
+    padding: 12px 16px;
+    gap: 12px;
+  }
 }
 
 .brand {
@@ -51,17 +58,30 @@
   display: flex;
   align-items: center;
   gap: 14px;
+
+  @media (max-width: 480px) {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }
 
 .userEmail {
   font-size: 13.5px;
   color: rgba(243, 245, 248, 0.7);
+
+  @media (max-width: 360px) {
+    display: none;
+  }
 }
 
 .content {
   max-width: 900px;
   margin: 0 auto;
   padding: 56px 24px;
+
+  @media (max-width: 480px) {
+    padding: 32px 16px;
+  }
 
   h1 {
     font-size: clamp(1.6rem, 4vw, 2.2rem);
@@ -89,6 +109,10 @@
     color: inherit;
     cursor: pointer;
     transition: border-color .15s ease, box-shadow .15s ease;
+
+    @media (max-width: 480px) {
+      width: 100%;
+    }
 
     &:hover {
       border-color: #b5bcc7;
