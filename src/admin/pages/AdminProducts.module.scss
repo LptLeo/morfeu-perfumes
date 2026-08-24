@@ -36,6 +36,27 @@
     }
   }
 
+  .logoutBtn {
+    font-family: $font-sans;
+    font-size: 14px;
+    color: #5a616e;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 8px;
+
+    &:hover {
+      color: $text-ink;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #b5bcc7;
+      outline-offset: 2px;
+    }
+  }
+
   @media (max-width: 640px) {
     flex-wrap: wrap;
 

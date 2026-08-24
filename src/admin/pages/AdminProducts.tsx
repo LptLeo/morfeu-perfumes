@@ -6,6 +6,8 @@ import {
   importCatalog,
   type AdminProduct,
 } from '../productsService';
+import { logout } from '../auth';
+import { navigate } from '../router';
 import seedData from '@/data/storeData.json';
 import styles from './AdminProducts.module.scss';
 
@@ -230,11 +232,18 @@ function ListHeader({
   onCreate: () => void;
   search: React.ReactNode;
 }) {
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin/login', true);
+  };
   return (
     <header className={styles.header}>
       <h1>Produtos</h1>
       {search}
       <Button onClick={onCreate}>+ Novo produto</Button>
+      <button type="button" onClick={handleLogout} className={styles.logoutBtn}>
+        Sair
+      </button>
     </header>
   );
 }
