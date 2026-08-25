@@ -12,7 +12,7 @@ interface SectionConfig {
   fields: Array<{
     path: string;
     label: string;
-    type: 'text' | 'textarea' | 'array' | 'image' | 'headerLogo' | 'syncedName' | 'syncedTagline';
+    type: 'text' | 'textarea' | 'array' | 'image' | 'headerLogo' | 'syncedTagline';
     arrayItemFields?: Array<{ key: string; label: string; type: 'text' | 'textarea' }>;
   }>;
 }
@@ -146,6 +146,21 @@ const ImageUploadWithFocus: React.FC<ImageUploadWithFocusProps> = ({ imageUrl, f
 
 const SECTIONS: SectionConfig[] = [
   {
+    key: 'storeInfo',
+    label: 'Header',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+        <polyline points="22,6 12,13 2,6" />
+      </svg>
+    ),
+    fields: [
+      { path: 'name', label: 'Nome da loja (exibido no header)', type: 'text' },
+      { path: 'tagline', label: 'Tagline do header', type: 'syncedTagline' },
+      { path: 'logo', label: 'Foto/Logo do Header', type: 'headerLogo' },
+    ],
+  },
+  {
     key: 'hero',
     label: 'Hero (Início)',
     icon: (
@@ -166,21 +181,6 @@ const SECTIONS: SectionConfig[] = [
       { path: 'image', label: 'Imagem de fundo do Hero', type: 'image' },
       { path: 'logoImage', label: 'Logo do Hero (alternativa à imagem)', type: 'image' },
       { path: 'trustBadges', label: 'Selos de confiança', type: 'array', arrayItemFields: [{ key: '', label: 'Texto do selo', type: 'text' }] },
-    ],
-  },
-  {
-    key: 'storeInfo',
-    label: 'Header / Store Info',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-        <polyline points="22,6 12,13 2,6" />
-      </svg>
-    ),
-    fields: [
-      { path: 'name', label: 'Nome da loja', type: 'syncedName' },
-      { path: 'tagline', label: 'Tagline do header', type: 'syncedTagline' },
-      { path: 'logo', label: 'Logo do Header', type: 'headerLogo' },
     ],
   },
   {
@@ -334,7 +334,12 @@ export const AdminTexts: React.FC = () => {
     if (!texts) return;
     const currentArray = getNestedValue(texts, `${sectionKey}.${fieldPath}`);
     const newArray = [...currentArray];
-    newArray[index] = { ...newArray[index], [itemKey]: value };
+    // Arrays de strings simples (ex.: selos de confiança) substituem o item direto
+    if (typeof newArray[index] === 'string' || itemKey === '') {
+      newArray[index] = value;
+    } else {
+      newArray[index] = { ...newArray[index], [itemKey]: value };
+    }
     const newTexts = setNestedValue(texts, `${sectionKey}.${fieldPath}`, newArray);
     setTexts(newTexts);
   };
@@ -359,12 +364,11 @@ export const AdminTexts: React.FC = () => {
     setSaving(true);
     setMessage(null);
     try {
-      // Sincroniza nome/tagline do header com seus campos de origem
+      // Sincroniza tagline do header com seu campo de origem no Hero
       const synced: SiteTexts = {
         ...texts,
         storeInfo: {
           ...texts.storeInfo,
-          name: texts.footer?.brand ?? texts.storeInfo.name,
           tagline: texts.hero?.tagline ?? texts.storeInfo.tagline,
         },
       };
@@ -432,7 +436,8 @@ export const AdminTexts: React.FC = () => {
 
                   if (field.type === 'array') {
                     const arrayValue = value as any[];
-                    const template = field.arrayItemFields?.reduce((acc, f) => ({ ...acc, [f.key]: '' }), {}) || {};
+                    const isStringArray = arrayValue.length === 0 || arrayValue.every((i) => typeof i === 'string');
+                    const template: any = isStringArray ? '' : field.arrayItemFields?.reduce((acc, f) => ({ ...acc, [f.key]: '' }), {}) || {};
 
                     return (
                       <div key={field.path} className={styles.arrayField}>
@@ -440,26 +445,38 @@ export const AdminTexts: React.FC = () => {
                         <div className={styles.arrayItems}>
                           {arrayValue.map((item, idx) => (
                             <div key={idx} className={styles.arrayItem}>
-                              {field.arrayItemFields?.map((itemField) => (
-                                <div key={itemField.key} className={styles.itemField}>
-                                  <label className={styles.itemLabel}>{itemField.label}</label>
-                                  {itemField.type === 'textarea' ? (
-                                    <textarea
-                                      value={item[itemField.key] || ''}
-                                      onChange={(e) => handleArrayChange(section.key, field.path, idx, itemField.key, e.target.value)}
-                                      rows={3}
-                                      className={styles.input}
-                                    />
-                                  ) : (
-                                    <input
-                                      type="text"
-                                      value={item[itemField.key] || ''}
-                                      onChange={(e) => handleArrayChange(section.key, field.path, idx, itemField.key, e.target.value)}
-                                      className={styles.input}
-                                    />
-                                  )}
+                              {isStringArray ? (
+                                <div className={styles.itemField}>
+                                  <label className={styles.itemLabel}>{field.arrayItemFields?.[0]?.label ?? 'Texto'}</label>
+                                  <input
+                                    type="text"
+                                    value={typeof item === 'string' ? item : ''}
+                                    onChange={(e) => handleArrayChange(section.key, field.path, idx, '', e.target.value)}
+                                    className={styles.input}
+                                  />
                                 </div>
-                              ))}
+                              ) : (
+                                field.arrayItemFields?.map((itemField) => (
+                                  <div key={itemField.key} className={styles.itemField}>
+                                    <label className={styles.itemLabel}>{itemField.label}</label>
+                                    {itemField.type === 'textarea' ? (
+                                      <textarea
+                                        value={item[itemField.key] || ''}
+                                        onChange={(e) => handleArrayChange(section.key, field.path, idx, itemField.key, e.target.value)}
+                                        rows={3}
+                                        className={styles.input}
+                                      />
+                                    ) : (
+                                      <input
+                                        type="text"
+                                        value={item[itemField.key] || ''}
+                                        onChange={(e) => handleArrayChange(section.key, field.path, idx, itemField.key, e.target.value)}
+                                        className={styles.input}
+                                      />
+                                    )}
+                                  </div>
+                                ))
+                              )}
                               <button
                                 type="button"
                                 className={styles.removeItemBtn}
@@ -478,24 +495,6 @@ export const AdminTexts: React.FC = () => {
                         >
                           + Adicionar item
                         </button>
-                      </div>
-                    );
-                  }
-
-                  if (field.type === 'syncedName') {
-                    const syncedValue = texts.footer?.brand ?? value ?? '';
-                    return (
-                      <div key={field.path} className={styles.field}>
-                        <label className={styles.label}>{field.label}</label>
-                        <input
-                          type="text"
-                          value={syncedValue}
-                          disabled
-                          className={styles.input}
-                        />
-                        <span className={styles.fieldHint}>
-                          Sincronizado automaticamente com "Rodapé → Marca". Edite por lá.
-                        </span>
                       </div>
                     );
                   }
