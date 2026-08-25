@@ -13,6 +13,8 @@ interface HeroProps {
 const getImageUrl = (image: ImageWithFocus | undefined): string | null => {
   if (!image?.url) return null;
   const url = image.url;
+  // URL absoluta (Cloudinary) retorna direto; caminho local recebe "/"
+  if (/^https?:\/\//i.test(url)) return url;
   return url.startsWith('/') ? url : `/${url}`;
 };
 
