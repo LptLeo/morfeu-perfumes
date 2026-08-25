@@ -19,7 +19,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .filterChip {
@@ -225,31 +225,13 @@
   flex: 1;
 }
 
-/* ── Tamanhos com scroll horizontal + indicador ─────────────────── */
+/* ── Tamanhos ─────────────────────────────────────────────────── */
 .productSizes {
   margin-top: 12px;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 8px;
-  padding-right: 48px; /* espaço para o hint */
-  scrollbar-width: thin;
-  scrollbar-color: $sand transparent;
-
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: $sand;
-    border-radius: 3px;
-  }
 }
 
 .productSizeRow {
@@ -289,40 +271,6 @@
 }
 
 /* ── Indicador de scroll (bolinha com seta) ────────────────────── */
-.scrollHint {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: $ink;
-  color: $gold-soft;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 2;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  &:hover {
-    transform: translateY(-50%) scale(1.06);
-  }
-
-  &:focus-visible {
-    outline: 2px solid $gold;
-    outline-offset: 2px;
-  }
-}
-
 .productPriceNote {
   font-size: 13px;
   color: $text-muted;
@@ -337,7 +285,6 @@
 .whatsappLink {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   width: 100%;
   padding: 14px 18px;
   font-family: $font-sans;
@@ -350,12 +297,8 @@
   box-shadow: 0 10px 24px rgba(108, 147, 199, 0.35);
   transition: filter 0.15s ease, transform 0.15s ease;
   justify-content: center;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
+  margin-top: auto;
+  flex-shrink: 0;
 
   &:hover {
     filter: brightness(1.06);
