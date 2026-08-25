@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { navigate } from '../router';
 import { getSiteTexts, saveSiteTexts, type SiteTexts } from '../textsService';
+import { getFirebaseAuth } from '@/lib/firebase';
 import { FocusEditor } from './FocusEditor';
 import styles from './AdminTexts.module.scss';
 
@@ -51,12 +52,17 @@ const ImageUploadWithFocus: React.FC<ImageUploadWithFocusProps> = ({ imageUrl, f
 
     setUploading(true);
     try {
+      // Token de autenticação (a função valida via Firebase)
+      const token = (await getFirebaseAuth().currentUser?.getIdToken()) ?? null;
+      if (!token) throw new Error('Sessão expirada — faça login novamente');
+
       // Create FormData and upload via Netlify Function
       const formData = new FormData();
       formData.append('file', file);
 
       const response = await fetch('/api/upload-image', {
         method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
