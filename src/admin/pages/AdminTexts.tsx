@@ -12,7 +12,7 @@ interface SectionConfig {
   fields: Array<{
     path: string;
     label: string;
-    type: 'text' | 'textarea' | 'array' | 'image' | 'headerLogo' | 'syncedTagline';
+    type: 'text' | 'textarea' | 'array' | 'image' | 'headerLogo';
     arrayItemFields?: Array<{ key: string; label: string; type: 'text' | 'textarea' }>;
   }>;
 }
@@ -122,9 +122,14 @@ const ImageUploadWithFocus: React.FC<ImageUploadWithFocusProps> = ({ imageUrl, f
           disabled={uploading}
           className={styles.fileInput}
         />
-        <label htmlFor={fileInputRef.current?.id || ''} className={`${styles.uploadBtn} ${uploading ? styles.uploading : ''}`}>
+        <button
+          type="button"
+          className={`${styles.uploadBtn} ${uploading ? styles.uploading : ''}`}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+        >
           {uploading ? 'Enviando…' : previewUrl ? 'Trocar imagem' : 'Carregar imagem'}
-        </label>
+        </button>
         {previewUrl && (
           <button
             type="button"
@@ -156,7 +161,7 @@ const SECTIONS: SectionConfig[] = [
     ),
     fields: [
       { path: 'name', label: 'Nome da loja (exibido no header)', type: 'text' },
-      { path: 'tagline', label: 'Tagline do header', type: 'syncedTagline' },
+      { path: 'tagline', label: 'Tagline do header', type: 'text' },
       { path: 'logo', label: 'Foto/Logo do Header', type: 'headerLogo' },
     ],
   },
@@ -177,7 +182,6 @@ const SECTIONS: SectionConfig[] = [
       { path: 'description', label: 'Descrição', type: 'textarea' },
       { path: 'primaryCta', label: 'Botão primário (CTA)', type: 'text' },
       { path: 'secondaryCta', label: 'Botão secundário', type: 'text' },
-      { path: 'tagline', label: 'Tagline exibida no header', type: 'text' },
       { path: 'image', label: 'Imagem de fundo do Hero', type: 'image' },
       { path: 'logoImage', label: 'Logo do Hero (alternativa à imagem)', type: 'image' },
       { path: 'trustBadges', label: 'Selos de confiança', type: 'array', arrayItemFields: [{ key: '', label: 'Texto do selo', type: 'text' }] },
@@ -364,16 +368,7 @@ export const AdminTexts: React.FC = () => {
     setSaving(true);
     setMessage(null);
     try {
-      // Sincroniza tagline do header com seu campo de origem no Hero
-      const synced: SiteTexts = {
-        ...texts,
-        storeInfo: {
-          ...texts.storeInfo,
-          tagline: texts.hero?.tagline ?? texts.storeInfo.tagline,
-        },
-      };
-      setTexts(synced);
-      await saveSiteTexts(synced);
+      await saveSiteTexts(texts);
       setMessage({ type: 'success', text: 'Textos salvos com sucesso!' });
     } catch (error) {
       setMessage({ type: 'error', text: 'Erro ao salvar textos' });
@@ -495,24 +490,6 @@ export const AdminTexts: React.FC = () => {
                         >
                           + Adicionar item
                         </button>
-                      </div>
-                    );
-                  }
-
-                  if (field.type === 'syncedTagline') {
-                    const syncedValue = texts.hero?.tagline ?? value ?? '';
-                    return (
-                      <div key={field.path} className={styles.field}>
-                        <label className={styles.label}>{field.label}</label>
-                        <input
-                          type="text"
-                          value={syncedValue}
-                          disabled
-                          className={styles.input}
-                        />
-                        <span className={styles.fieldHint}>
-                          Sincronizado automaticamente com "Hero → Tagline exibida no header". Edite por lá.
-                        </span>
                       </div>
                     );
                   }
