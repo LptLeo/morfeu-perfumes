@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/Button';
 import { WhatsAppIcon, CheckIcon } from '@/assets/icons';
-import { StoreData } from '@/types/store';
+import { StoreData, ImageWithFocus } from '@/types/store';
 import { buildWhatsAppUrl } from '@/utils/whatsapp';
 import styles from './Hero.module.scss';
 
@@ -9,6 +9,22 @@ interface HeroProps {
   data: StoreData['hero'];
   whatsapp: StoreData['storeInfo']['whatsapp'];
 }
+
+const getImageUrl = (image: ImageWithFocus | undefined): string | null => {
+  if (!image?.url) return null;
+  const url = image.url;
+  return url.startsWith('/') ? url : `/${url}`;
+};
+
+const getObjectPosition = (image: ImageWithFocus | undefined): string => {
+  if (!image?.focus) return '50% 50%';
+  return `${image.focus.x}% ${image.focus.y}%`;
+};
+
+const getTransform = (image: ImageWithFocus | undefined): string => {
+  if (!image?.focus) return 'scale(1)';
+  return `scale(${image.focus.zoom})`;
+};
 
 export const Hero: React.FC<HeroProps> = ({ data, whatsapp }) => {
   const waUrl = buildWhatsAppUrl(whatsapp.number, whatsapp.defaultMessage);
@@ -27,6 +43,9 @@ export const Hero: React.FC<HeroProps> = ({ data, whatsapp }) => {
       </>
     );
   };
+
+  const heroImageUrl = getImageUrl(data.image);
+  const heroLogoUrl = getImageUrl(data.logoImage);
 
   return (
     <section className={styles.hero} id="topo">
@@ -63,17 +82,25 @@ export const Hero: React.FC<HeroProps> = ({ data, whatsapp }) => {
         </div>
 
         <div className={styles.heroVisual}>
-          {data.image ? (
+          {heroImageUrl ? (
             <img
               className={styles.heroImg}
-              src={data.image.startsWith('/') ? data.image : `/${data.image}`}
+              src={heroImageUrl}
               alt="Decants de perfumes Elixir n°7"
+              style={{
+                objectPosition: getObjectPosition(data.image),
+                transform: getTransform(data.image),
+              }}
             />
-          ) : data.logoImage ? (
+          ) : heroLogoUrl ? (
             <img
               className={styles.heroLogo}
-              src={data.logoImage.startsWith('/') ? data.logoImage : `/${data.logoImage}`}
+              src={heroLogoUrl}
               alt="Logomarca Elixir n°7"
+              style={{
+                objectPosition: getObjectPosition(data.logoImage),
+                transform: getTransform(data.logoImage),
+              }}
             />
           ) : (
             <span className={styles.heroFallback}>{data.fallbackText}</span>

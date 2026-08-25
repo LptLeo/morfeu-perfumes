@@ -19,6 +19,7 @@ function AppContent() {
   const { texts, loading } = useSiteTexts();
 
   // Fallback para dados estáticos enquanto carrega ou se houver erro
+  const storeInfoData = texts?.storeInfo ?? storeData.storeInfo;
   const heroData = texts?.hero ?? storeData.hero;
   const whyDecantsData = texts?.whyDecants ?? storeData.whyDecants;
   const catalogData = texts?.catalog ?? storeData.catalog;
@@ -38,19 +39,19 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-parchment text-text-ink selection:bg-gold/30">
-      <Header storeInfo={storeData.storeInfo} />
+      <Header storeInfo={storeInfoData} />
 
       <main className="flex-1">
         <Hero
           data={heroData}
-          whatsapp={storeData.storeInfo.whatsapp}
+          whatsapp={storeInfoData.whatsapp}
         />
 
         <WhyDecants data={whyDecantsData} />
 
         <Catalog
           catalogData={catalogData}
-          whatsapp={storeData.storeInfo.whatsapp}
+          whatsapp={storeInfoData.whatsapp}
         />
 
         <HowItWorks data={howItWorksData} />
@@ -61,18 +62,18 @@ function AppContent() {
 
         <CtaFinal
           data={storeData.ctaFinal}
-          whatsapp={storeData.storeInfo.whatsapp}
+          whatsapp={storeInfoData.whatsapp}
         />
       </main>
 
       <Footer
         footerData={footerData}
-        whatsapp={storeData.storeInfo.whatsapp}
+        whatsapp={storeInfoData.whatsapp}
       />
 
       <FloatingWhatsApp
-        phoneNumber={storeData.storeInfo.whatsapp.number}
-        defaultMessage={storeData.storeInfo.whatsapp.defaultMessage}
+        phoneNumber={storeInfoData.whatsapp.number}
+        defaultMessage={storeInfoData.whatsapp.defaultMessage}
       />
     </div>
   );

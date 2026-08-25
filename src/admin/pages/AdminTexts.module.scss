@@ -131,6 +131,12 @@ h1 {
     text-transform: uppercase;
   }
 
+  .fieldHint {
+    font-size: 12px;
+    color: $text-muted;
+    font-style: italic;
+  }
+
   .input {
     font-family: $font-sans;
     font-size: 15px;
@@ -151,6 +157,7 @@ h1 {
     &:disabled {
       opacity: 0.55;
       cursor: not-allowed;
+      background: rgba(108, 147, 199, 0.04);
     }
   }
 
@@ -159,6 +166,115 @@ h1 {
     min-height: 80px;
     font-family: $font-sans;
   }
+}
+
+// ── Upload de imagem com enquadramento ────────────────────────────────
+.imageUpload {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imagePreviewWrapper {
+  max-width: 320px;
+}
+
+.imagePreview {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: $radius-s;
+  border: 1px solid $sand;
+  background: #fff;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    background: rgba(108, 147, 199, 0.05);
+    border-style: dashed;
+
+    span {
+      font-size: 13px;
+      color: $text-muted;
+    }
+  }
+}
+
+.imageActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.uploadBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  font-family: $font-sans;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #6c93c7;
+  background: rgba(108, 147, 199, 0.08);
+  border: 1px solid rgba(108, 147, 199, 0.25);
+  border-radius: $radius-s;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(108, 147, 199, 0.15);
+    border-color: #6c93c7;
+  }
+
+  &.uploading {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}
+
+.removeBtn {
+  padding: 9px 16px;
+  font-family: $font-sans;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: $wine-hover;
+  background: transparent;
+  border: 1px solid rgba(214, 69, 69, 0.35);
+  border-radius: $radius-s;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(214, 69, 69, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.focusHint {
+  font-size: 12px;
+  color: $text-muted;
 }
 
 .arrayField {

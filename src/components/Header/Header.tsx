@@ -1,12 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
-import { StoreInfo } from '@/types/store';
+import { StoreInfo, ImageWithFocus } from '@/types/store';
 import { buildWhatsAppUrl } from '@/utils/whatsapp';
 import styles from './Header.module.scss';
 
 interface HeaderProps {
   storeInfo: StoreInfo;
 }
+
+const getImageUrl = (image: ImageWithFocus | undefined): string | null => {
+  if (!image?.url) return null;
+  const url = image.url;
+  return url.startsWith('/') ? url : `/${url}`;
+};
+
+const getObjectPosition = (image: ImageWithFocus | undefined): string => {
+  if (!image?.focus) return '50% 50%';
+  return `${image.focus.x}% ${image.focus.y}%`;
+};
+
+const getTransform = (image: ImageWithFocus | undefined): string => {
+  if (!image?.focus) return 'scale(1)';
+  return `scale(${image.focus.zoom})`;
+};
 
 export const Header: React.FC<HeaderProps> = ({ storeInfo }) => {
   const waUrl = buildWhatsAppUrl(
@@ -50,12 +66,26 @@ export const Header: React.FC<HeaderProps> = ({ storeInfo }) => {
     { href: '#faq', label: 'Dúvidas' },
   ];
 
+  const logoUrl = getImageUrl(storeInfo.logo);
+
   return (
     <>
       <header className={styles.header}>
         <div className={styles.container}>
           <a href="#topo" className={styles.brand} aria-label={storeInfo.name}>
-            <div className={styles.brandIcon}>E7</div>
+            {logoUrl ? (
+              <img
+                className={styles.brandLogo}
+                src={logoUrl}
+                alt={storeInfo.name}
+                style={{
+                  objectPosition: getObjectPosition(storeInfo.logo),
+                  transform: getTransform(storeInfo.logo),
+                }}
+              />
+            ) : (
+              <div className={styles.brandIcon}>E7</div>
+            )}
             <span className={styles.brandWord}>
               <span className={styles.brandName}>{storeInfo.name}</span>
               <span className={styles.brandTag}>{storeInfo.tagline}</span>

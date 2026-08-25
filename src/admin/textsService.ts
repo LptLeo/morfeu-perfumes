@@ -7,7 +7,7 @@ import {
   type Firestore,
 } from 'firebase/firestore';
 import { getFirebaseApp } from '@/lib/firebase';
-import type { StoreData } from '@/types/store';
+import type { StoreData, ImageWithFocus } from '@/types/store';
 
 const TEXTS_COLLECTION = 'site_texts';
 const TEXTS_DOC_ID = 'content';
@@ -21,6 +21,11 @@ export function getDb(): Firestore {
   return _db;
 }
 
+const defaultImageWithFocus = (url: string | null): ImageWithFocus => ({
+  url,
+  focus: { x: 0.5, y: 0.5, zoom: 1 },
+});
+
 // SiteTexts usa os mesmos tipos do storeData.json para compatibilidade total
 export interface SiteTexts {
   hero: StoreData['hero'];
@@ -29,6 +34,7 @@ export interface SiteTexts {
   howItWorks: StoreData['howItWorks'];
   faq: StoreData['faq'];
   footer: StoreData['footer'];
+  storeInfo: StoreData['storeInfo'];
   updatedAt?: string;
 }
 
@@ -41,8 +47,9 @@ export const defaultSiteTexts: SiteTexts = {
     description: 'Fragrâncias árabes, contratipos e importados selecionados em decants — na medida certa para você experimentar na pele antes de decidir. Peça pelo WhatsApp.',
     primaryCta: 'Quero escolher meu decant',
     secondaryCta: 'Ver perfumes disponíveis',
-    image: null,
-    logoImage: '/favicon.svg',
+    tagline: 'Decants árabes & importados',
+    image: defaultImageWithFocus(null),
+    logoImage: defaultImageWithFocus('/favicon.svg'),
     fallbackText: 'Elixir n°7 — Decants árabes & importados',
     trustBadges: ['Loja 100% online', 'Atendimento direto com Marcos', 'Curadoria de fragrâncias'],
   },
@@ -73,7 +80,7 @@ export const defaultSiteTexts: SiteTexts = {
       ctaText: 'Sugerir um perfume',
     },
   },
-howItWorks: {
+  howItWorks: {
     eyebrow: 'Como funciona',
     title: 'Do interesse ao decant na sua mão',
     steps: [
@@ -104,6 +111,21 @@ howItWorks: {
     buttonText: 'Falar no WhatsApp',
     bottomTextLeft: 'Elixir n°7. Loja 100% online.',
     bottomTextRight: '',
+  },
+  storeInfo: {
+    name: 'Elixir n°7',
+    tagline: 'Decants árabes & importados',
+    seo: {
+      title: 'Elixir n°7 | Decants de Perfumes Árabes, Contratipos e Importados',
+      description: 'Decants de perfumes árabes, contratipos e importados selecionados pela Elixir n°7. Experimente antes de investir no frasco — peça pelo WhatsApp.',
+    },
+    whatsapp: {
+      number: '5531998406246',
+      defaultMessage: 'Olá! Vim pelo site da Elixir n°7 e quero conhecer os perfumes disponíveis para decant.',
+      suggestionMessage: 'Olá! Não encontrei no catálogo da Elixir n°7 o perfume que eu queria. Gostaria de sugerir: ',
+    },
+    sellerName: 'Marcos',
+    logo: defaultImageWithFocus('/favicon.svg'),
   },
 };
 

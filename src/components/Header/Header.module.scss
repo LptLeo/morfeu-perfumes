@@ -40,6 +40,17 @@
   font-size: 18px;
 }
 
+.brandLogo {
+  height: 44px;
+  width: 44px;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+  border: 1px solid rgba(175, 198, 232, 0.3);
+  background: rgba(108, 147, 199, 0.15);
+  flex-shrink: 0;
+}
+
 .brandWord {
   display: flex;
   flex-direction: column;

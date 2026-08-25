@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { navigate } from '../router';
 import { getSiteTexts, saveSiteTexts, type SiteTexts } from '../textsService';
+import { FocusEditor } from './FocusEditor';
 import styles from './AdminTexts.module.scss';
 
 interface SectionConfig {
@@ -11,10 +12,137 @@ interface SectionConfig {
   fields: Array<{
     path: string;
     label: string;
-    type: 'text' | 'textarea' | 'array';
+    type: 'text' | 'textarea' | 'array' | 'image' | 'headerLogo' | 'syncedName' | 'syncedTagline';
     arrayItemFields?: Array<{ key: string; label: string; type: 'text' | 'textarea' }>;
   }>;
 }
+
+interface ImageWithFocus {
+  url: string | null;
+  focus?: { x: number; y: number; zoom: number } | null;
+}
+
+interface ImageUploadWithFocusProps {
+  imageUrl: string | null | undefined;
+  focus?: { x: number; y: number; zoom: number } | null;
+  onChange: (value: ImageWithFocus) => void;
+  aspectRatio?: string;
+}
+
+const ImageUploadWithFocus: React.FC<ImageUploadWithFocusProps> = ({ imageUrl, focus, onChange, aspectRatio = '4/5' }) => {
+  const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(imageUrl || null);
+  const [currentFocus, setCurrentFocus] = useState(focus ?? { x: 0.5, y: 0.5, zoom: 1 });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione uma imagem válida.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('A imagem deve ter no máximo 5MB.');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Create FormData and upload via Netlify Function
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erro no upload');
+      }
+
+      const data = await response.json();
+      const newUrl = data.url;
+      setPreviewUrl(newUrl);
+      onChange({ url: newUrl, focus: { x: 0.5, y: 0.5, zoom: 1 } });
+      setCurrentFocus({ x: 0.5, y: 0.5, zoom: 1 });
+    } catch (error) {
+      console.error('Erro no upload:', error);
+      alert('Erro ao fazer upload da imagem. Tente novamente.');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setPreviewUrl(null);
+    onChange({ url: null, focus: { x: 0.5, y: 0.5, zoom: 1 } });
+    setCurrentFocus({ x: 0.5, y: 0.5, zoom: 1 });
+  };
+
+  const handleFocusChange = (newFocus: { x: number; y: number; zoom: number }) => {
+    setCurrentFocus(newFocus);
+    onChange({ url: previewUrl, focus: newFocus });
+  };
+
+  const showFocusEditor = previewUrl && !previewUrl.startsWith('data:') && previewUrl !== '/favicon.svg';
+
+  return (
+    <div className={styles.imageUpload}>
+      <div className={styles.imagePreviewWrapper}>
+        {previewUrl ? (
+          <div className={styles.imagePreview} style={{ aspectRatio }}>
+            <img src={previewUrl} alt="Preview" draggable={false} />
+            {showFocusEditor && (
+              <FocusEditor
+                imageUrl={previewUrl}
+                value={currentFocus}
+                onChange={handleFocusChange}
+              />
+            )}
+          </div>
+        ) : (
+          <div className={`${styles.imagePreview} ${styles.empty}`} style={{ aspectRatio }}>
+            <span>Nenhuma imagem</span>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.imageActions}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileSelect}
+          disabled={uploading}
+          className={styles.fileInput}
+        />
+        <label htmlFor={fileInputRef.current?.id || ''} className={`${styles.uploadBtn} ${uploading ? styles.uploading : ''}`}>
+          {uploading ? 'Enviando…' : previewUrl ? 'Trocar imagem' : 'Carregar imagem'}
+        </label>
+        {previewUrl && (
+          <button
+            type="button"
+            className={styles.removeBtn}
+            onClick={handleRemoveImage}
+            disabled={uploading}
+          >
+            Remover
+          </button>
+        )}
+      </div>
+
+      {showFocusEditor && (
+        <p className={styles.focusHint}>Arraste a imagem para escolher o enquadramento. Use o slider para zoom.</p>
+      )}
+    </div>
+  );
+};
 
 const SECTIONS: SectionConfig[] = [
   {
@@ -34,7 +162,25 @@ const SECTIONS: SectionConfig[] = [
       { path: 'description', label: 'Descrição', type: 'textarea' },
       { path: 'primaryCta', label: 'Botão primário (CTA)', type: 'text' },
       { path: 'secondaryCta', label: 'Botão secundário', type: 'text' },
+      { path: 'tagline', label: 'Tagline exibida no header', type: 'text' },
+      { path: 'image', label: 'Imagem de fundo do Hero', type: 'image' },
+      { path: 'logoImage', label: 'Logo do Hero (alternativa à imagem)', type: 'image' },
       { path: 'trustBadges', label: 'Selos de confiança', type: 'array', arrayItemFields: [{ key: '', label: 'Texto do selo', type: 'text' }] },
+    ],
+  },
+  {
+    key: 'storeInfo',
+    label: 'Header / Store Info',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+        <polyline points="22,6 12,13 2,6" />
+      </svg>
+    ),
+    fields: [
+      { path: 'name', label: 'Nome da loja', type: 'syncedName' },
+      { path: 'tagline', label: 'Tagline do header', type: 'syncedTagline' },
+      { path: 'logo', label: 'Logo do Header', type: 'headerLogo' },
     ],
   },
   {
@@ -123,7 +269,7 @@ const SECTIONS: SectionConfig[] = [
       ]},
     ],
   },
-{
+  {
     key: 'footer',
     label: 'Rodapé',
     icon: (
@@ -213,12 +359,28 @@ export const AdminTexts: React.FC = () => {
     setSaving(true);
     setMessage(null);
     try {
-      await saveSiteTexts(texts);
+      // Sincroniza nome/tagline do header com seus campos de origem
+      const synced: SiteTexts = {
+        ...texts,
+        storeInfo: {
+          ...texts.storeInfo,
+          name: texts.footer?.brand ?? texts.storeInfo.name,
+          tagline: texts.hero?.tagline ?? texts.storeInfo.tagline,
+        },
+      };
+      setTexts(synced);
+      await saveSiteTexts(synced);
       setMessage({ type: 'success', text: 'Textos salvos com sucesso!' });
     } catch (error) {
       setMessage({ type: 'error', text: 'Erro ao salvar textos' });
     }
     setSaving(false);
+  };
+
+  const handleImageChange = (sectionKey: keyof SiteTexts, fieldPath: string, newImage: ImageWithFocus) => {
+    if (!texts) return;
+    const newTexts = setNestedValue(texts, `${sectionKey}.${fieldPath}`, newImage);
+    setTexts(newTexts);
   };
 
   const handleBack = () => navigate('/admin');
@@ -316,6 +478,72 @@ export const AdminTexts: React.FC = () => {
                         >
                           + Adicionar item
                         </button>
+                      </div>
+                    );
+                  }
+
+                  if (field.type === 'syncedName') {
+                    const syncedValue = texts.footer?.brand ?? value ?? '';
+                    return (
+                      <div key={field.path} className={styles.field}>
+                        <label className={styles.label}>{field.label}</label>
+                        <input
+                          type="text"
+                          value={syncedValue}
+                          disabled
+                          className={styles.input}
+                        />
+                        <span className={styles.fieldHint}>
+                          Sincronizado automaticamente com "Rodapé → Marca". Edite por lá.
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  if (field.type === 'syncedTagline') {
+                    const syncedValue = texts.hero?.tagline ?? value ?? '';
+                    return (
+                      <div key={field.path} className={styles.field}>
+                        <label className={styles.label}>{field.label}</label>
+                        <input
+                          type="text"
+                          value={syncedValue}
+                          disabled
+                          className={styles.input}
+                        />
+                        <span className={styles.fieldHint}>
+                          Sincronizado automaticamente com "Hero → Tagline exibida no header". Edite por lá.
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  if (field.type === 'image') {
+                    const imageData = value as { url: string | null; focus: { x: number; y: number; zoom: number } | null };
+                    return (
+                      <div key={field.path} className={styles.field}>
+                        <label className={styles.label}>{field.label}</label>
+                        <ImageUploadWithFocus
+                          imageUrl={imageData?.url ?? ''}
+                          focus={imageData?.focus ?? { x: 0.5, y: 0.5, zoom: 1 }}
+                          onChange={(newImage) => handleImageChange(section.key, field.path, newImage)}
+                          aspectRatio="4/5"
+                        />
+                      </div>
+                    );
+                  }
+
+                  if (field.type === 'headerLogo') {
+                    const logoData = (value as { url?: string | null; focus?: { x: number; y: number; zoom: number } | null }) ?? {};
+                    return (
+                      <div key={field.path} className={styles.field}>
+                        <label className={styles.label}>{field.label}</label>
+                        <ImageUploadWithFocus
+                          imageUrl={logoData?.url ?? '/favicon.svg'}
+                          focus={logoData?.focus ?? { x: 0.5, y: 0.5, zoom: 1 }}
+                          onChange={(newImage) => handleImageChange(section.key, field.path, newImage)}
+                          aspectRatio="1/1"
+                        />
                       </div>
                     );
                   }

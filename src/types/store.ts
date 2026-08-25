@@ -58,6 +58,11 @@ export interface FaqItemData {
   answer: string;
 }
 
+export interface ImageWithFocus {
+  url: string | null;
+  focus?: { x: number; y: number; zoom: number } | null;
+}
+
 export interface StoreInfo {
   name: string;
   tagline: string;
@@ -71,6 +76,7 @@ export interface StoreInfo {
     suggestionMessage: string;
   };
   sellerName: string;
+  logo?: ImageWithFocus; // Header logo with focus support
 }
 
 export interface StoreData {
@@ -83,8 +89,9 @@ export interface StoreData {
     primaryCta: string;
     secondaryCta: string;
     trustBadges: string[];
-    image: string | null;
-    logoImage: string | null;
+    tagline?: string; // Tagline exibida no header (sincronizada)
+    image?: ImageWithFocus; // Hero background image with focus support
+    logoImage?: ImageWithFocus; // Hero logo (alternative to background image) with focus support
     fallbackText: string;
   };
   whyDecants: {

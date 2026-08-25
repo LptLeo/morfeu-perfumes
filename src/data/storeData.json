@@ -11,7 +11,11 @@
       "defaultMessage": "Olá! Vim pelo site da Elixir n°7 e quero conhecer os perfumes disponíveis para decant.",
       "suggestionMessage": "Olá! Não encontrei no catálogo da Elixir n°7 o perfume que eu queria. Gostaria de sugerir: "
     },
-    "sellerName": "Marcos"
+    "sellerName": "Marcos",
+    "logo": {
+      "url": "/favicon.svg",
+      "focus": { "x": 0.5, "y": 0.5, "zoom": 1 }
+    }
   },
   "hero": {
     "eyebrow": "Decants · Árabes, contratipos & importados",
@@ -20,8 +24,14 @@
     "description": "Fragrâncias árabes, contratipos e importados selecionados em decants — na medida certa para você experimentar na pele antes de decidir. Peça pelo WhatsApp.",
     "primaryCta": "Quero escolher meu decant",
     "secondaryCta": "Ver perfumes disponíveis",
-    "image": null,
-    "logoImage": "/favicon.svg",
+    "image": {
+      "url": null,
+      "focus": { "x": 0.5, "y": 0.5, "zoom": 1 }
+    },
+    "logoImage": {
+      "url": "/favicon.svg",
+      "focus": { "x": 0.5, "y": 0.5, "zoom": 1 }
+    },
     "fallbackText": "Elixir n°7 — Decants árabes & importados",
     "trustBadges": [
       "Loja 100% online",
