@@ -102,7 +102,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  /** Sobe arquivo pendente ao Cloudinary pela function; retorna URL final. */
+  /** Sobe arquivo pendente ao Cloudinary pela Netlify Function; retorna URL final. */
   const uploadIfPending = async (): Promise<string | null> => {
     if (!pendingFile) return imageUrl;
     setSaveState('uploading');

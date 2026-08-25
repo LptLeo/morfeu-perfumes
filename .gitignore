@@ -4,3 +4,6 @@ dist
 !.env.example
 .playwright-mcp/
 *.local.json
+
+# Local Netlify folder
+.netlify

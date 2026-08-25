@@ -52,11 +52,10 @@ const ImageUploadWithFocus: React.FC<ImageUploadWithFocusProps> = ({ imageUrl, f
 
     setUploading(true);
     try {
-      // Token de autenticação (a função valida via Firebase)
+      // Token de autenticação para a Netlify Function
       const token = (await getFirebaseAuth().currentUser?.getIdToken()) ?? null;
       if (!token) throw new Error('Sessão expirada — faça login novamente');
 
-      // Create FormData and upload via Netlify Function
       const formData = new FormData();
       formData.append('file', file);
 
@@ -73,6 +72,7 @@ const ImageUploadWithFocus: React.FC<ImageUploadWithFocusProps> = ({ imageUrl, f
 
       const data = await response.json();
       const newUrl = data.url;
+
       setPreviewUrl(newUrl);
       onChange({ url: newUrl, focus: { x: 0.5, y: 0.5, zoom: 1 } });
       setCurrentFocus({ x: 0.5, y: 0.5, zoom: 1 });
