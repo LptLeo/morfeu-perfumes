@@ -412,6 +412,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
                 imageUrl={previewUrl ?? imageUrl!}
                 value={imageFocus}
                 onChange={setImageFocus}
+                aspectRatio="4/5"
               />
             </>
           )}

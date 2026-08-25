@@ -1,9 +1,9 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styles from './ProductForm.module.scss';
 
 export interface FocusValue {
-  x: number; // 0..1 — posição horizontal (object-position)
-  y: number; // 0..1
+  x: number; // 0..1 — object-position horizontal
+  y: number; // 0..1 — object-position vertical
   zoom: number; // 1..3
 }
 
@@ -11,45 +11,123 @@ interface FocusEditorProps {
   imageUrl: string;
   value: FocusValue | null;
   onChange: (value: FocusValue) => void;
+  aspectRatio?: string; // "4/5" | "1/1" | "16/9"
 }
 
 /**
- * Editor de enquadramento 4:5 — arrasta para posicionar, slider de zoom.
- * Salva apenas metadados {x,y,zoom} no banco (foto original preservada).
+ * Editor de enquadramento — reescrito do zero.
+ * Drag simples: mouse down -> move -> up.
+ * Sem stale closure: usa useRef para estado atual.
+ * Math transparente: dx/dy em fração do frame -> object-position.
  */
-export const FocusEditor: React.FC<FocusEditorProps> = ({ imageUrl, value, onChange }) => {
+export const FocusEditor: React.FC<FocusEditorProps> = ({
+  imageUrl,
+  value,
+  onChange,
+  aspectRatio = '4/5',
+}) => {
   const [dragging, setDragging] = useState(false);
-  const dragStart = useRef({ px: 0, py: 0, fx: 0.5, fy: 0.5 });
   const frameRef = useRef<HTMLDivElement>(null);
-  const focus: FocusValue = value ?? { x: 0.5, y: 0.5, zoom: 1 };
 
-  const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+  // Ref sempre atual - evita stale closure sem useEffect
+  const focusRef = useRef<FocusValue>(value ?? { x: 0.5, y: 0.5, zoom: 1 });
+  useEffect(() => {
+    if (value) focusRef.current = value;
+  }, [value]);
 
-  const onPointerDown = (e: React.PointerEvent) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    dragStart.current = { px: e.clientX, py: e.clientY, fx: focus.x, fy: focus.y };
+  // Estado local para UI (reage ao focusRef via setter)
+  const [focus, setFocus] = useState<FocusValue>(focusRef.current);
+
+  // Sincroniza focus local com ref quando prop muda
+  useEffect(() => {
+    setFocus(focusRef.current);
+  }, [value]);
+
+  const [arW, arH] = aspectRatio.split('/').map(Number);
+  const aspect = arW / arH; // 4/5 = 0.8, 1/1 = 1
+
+  const clamp = (v: number) => Math.max(0, Math.min(1, v));
+
+  // Inicia drag - captura ponteiro no frame
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault(); // bloqueia drag nativo do browser na img
+    const frame = frameRef.current;
+    if (!frame) return;
+
+    frame.setPointerCapture(e.pointerId);
     setDragging(true);
+
+    // Posição inicial do ponteiro + focus atual
+    const start = {
+      px: e.clientX,
+      py: e.clientY,
+      fx: focusRef.current.x,
+      fy: focusRef.current.y,
+    };
+
+    // Guarda no dataset do frame para o move ler
+    frame.dataset.dragStart = JSON.stringify(start);
   };
 
-  const onPointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!dragging) return;
-      const rect = frameRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      // fração do quadro arrastada; sensibilidade reduzida pelo zoom
-      const dxFrac = (e.clientX - dragStart.current.px) / rect.width;
-      const dyFrac = (e.clientY - dragStart.current.py) / rect.height;
-      const k = 1.6 / focus.zoom; // arrastar p/ direita mostra conteúdo mais à esquerda
-      onChange({
-        ...focus,
-        x: clamp(dragStart.current.fx - dxFrac * k, 0, 1),
-        y: clamp(dragStart.current.fy - dyFrac * k, 0, 1),
-      });
-    },
-    [dragging, focus, onChange]
-  );
+  // Move - lê do dataset, calcula, aplica
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    const frame = frameRef.current;
+    if (!frame) return;
 
-  const onPointerUp = () => setDragging(false);
+    const startData = frame.dataset.dragStart;
+    if (!startData) return;
+    const start = JSON.parse(startData) as {
+      px: number; py: number; fx: number; fy: number;
+    };
+
+    const rect = frame.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+
+    // Fração do frame arrastada (0..1)
+    const dxFrac = (e.clientX - start.px) / rect.width;
+    const dyFrac = (e.clientY - start.py) / rect.height;
+
+    // Sensibilidade base (mesma p/ ambos eixos) + compensação aspect-ratio
+    const BASE_SENSITIVITY = 1.6;
+    const kX = BASE_SENSITIVITY / focusRef.current.zoom;
+    const kY = kX / aspect; // compensa altura > largura no 4/5
+
+    // Nova posição: arrastar direita -> mostra esquerda (x diminui)
+    // arrastar baixo -> mostra baixo (y aumenta)
+    const nextX = clamp(start.fx - dxFrac * kX);
+    const nextY = clamp(start.fy + dyFrac * kY);
+
+    const next = { ...focusRef.current, x: nextX, y: nextY };
+    focusRef.current = next;
+    setFocus(next);
+    onChange(next);
+  };
+
+  // Fim drag - libera capture
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const frame = frameRef.current;
+    if (frame) {
+      try { frame.releasePointerCapture(e.pointerId); } catch {}
+      delete frame.dataset.dragStart;
+    }
+    setDragging(false);
+  };
+
+  const onZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextZoom = Math.max(1, Math.min(3, Number(e.target.value)));
+    const next = { ...focusRef.current, zoom: nextZoom };
+    focusRef.current = next;
+    setFocus(next);
+    onChange(next);
+  };
+
+  const onReset = () => {
+    const next = { x: 0.5, y: 0.5, zoom: 1 };
+    focusRef.current = next;
+    setFocus(next);
+    onChange(next);
+  };
 
   const imgStyle: React.CSSProperties = {
     objectPosition: `${focus.x * 100}% ${focus.y * 100}%`,
@@ -60,14 +138,23 @@ export const FocusEditor: React.FC<FocusEditorProps> = ({ imageUrl, value, onCha
     <div className={styles.focusEditor}>
       <div
         ref={frameRef}
+        style={{ aspectRatio }}
         className={`${styles.focusFrame} ${dragging ? styles.dragging : ''}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onPointerLeave={onPointerUp}
         role="application"
         aria-label="Editor de enquadramento da foto"
       >
-        <img src={imageUrl} alt="" draggable={false} style={imgStyle} />
+        <img
+        src={imageUrl}
+        alt=""
+        draggable={false}
+        onDragStart={(e) => e.preventDefault()}
+        style={imgStyle}
+      />
         <span className={styles.focusGridH} aria-hidden="true" />
         <span className={styles.focusGridV} aria-hidden="true" />
       </div>
@@ -81,17 +168,15 @@ export const FocusEditor: React.FC<FocusEditorProps> = ({ imageUrl, value, onCha
           max={3}
           step={0.05}
           value={focus.zoom}
-          onChange={(e) => onChange({ ...focus, zoom: clamp(Number(e.target.value), 1, 3) })}
+          onChange={onZoomChange}
         />
-        <button
-          type="button"
-          className={styles.resetBtn}
-          onClick={() => onChange({ x: 0.5, y: 0.5, zoom: 1 })}
-        >
+        <button type="button" className={styles.resetBtn} onClick={onReset}>
           Centralizar
         </button>
       </div>
-      <p className={styles.focusHint}>Arraste a foto para escolher qual parte aparece no catálogo.</p>
+      <p className={styles.focusHint}>
+        Arraste a foto para escolher qual parte aparece no catálogo.
+      </p>
     </div>
   );
 };

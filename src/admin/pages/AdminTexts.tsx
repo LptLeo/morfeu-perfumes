@@ -102,13 +102,14 @@ const ImageUploadWithFocus: React.FC<ImageUploadWithFocusProps> = ({ imageUrl, f
     <div className={styles.imageUpload}>
       <div className={styles.imagePreviewWrapper}>
         {previewUrl ? (
-          <div className={styles.imagePreview} style={{ aspectRatio }}>
+          <div className={styles.imagePreview}>
             <img src={previewUrl} alt="Preview" draggable={false} />
             {showFocusEditor && (
               <FocusEditor
                 imageUrl={previewUrl}
                 value={currentFocus}
                 onChange={handleFocusChange}
+                aspectRatio={aspectRatio}
               />
             )}
           </div>
