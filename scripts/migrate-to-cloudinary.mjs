@@ -23,7 +23,8 @@ import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 
 const ROOT = path.resolve(process.cwd());
 const DRY_RUN = process.argv.includes('--dry-run');
-const CLOUD = 'ix9xjjko'; // validado contra api.cloudinary.com/usage
+const CLOUD = process.env.CLOUDINARY_CLOUD_NAME;
+if (!CLOUD) throw new Error('CLOUDINARY_CLOUD_NAME não definido no ambiente');
 const FOLDER = 'elixir7/products';
 
 // ── env (.env.local — valores podem ter caracteres especiais) ──────────
