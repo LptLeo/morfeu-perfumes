@@ -1,5 +1,5 @@
-import React from 'react';
-import { Product } from '@/types/store';
+import React, { useState } from 'react';
+import { Product, ProductSize } from '@/types/store';
 import { buildProductMessage, buildWhatsAppUrl } from '@/utils/whatsapp';
 import styles from './Catalog.module.scss';
 
@@ -18,6 +18,16 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, whatsappNumber }) => {
+  const [selectedSizes, setSelectedSizes] = useState<ProductSize[]>([]);
+
+  const toggleSize = (size: ProductSize) => {
+    setSelectedSizes((prev) =>
+      prev.some((s) => s.size === size.size && s.priceCents === size.priceCents)
+        ? prev.filter((s) => s !== size)
+        : [...prev, size],
+    );
+  };
+
   return (
     <article className={styles.productCard}>
       <div className={styles.productMedia}>
@@ -66,23 +76,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, whatsappNumbe
             role="group"
             aria-label={`Escolha o tamanho do decant ${product.name}`}
           >
-            {product.sizes.map((s) => (
-              <button
-                key={`${s.size}-${s.priceCents}`}
-                type="button"
-                className={styles.productSizeRow}
-                aria-pressed={false}
-                onClick={() => {}}
-                disabled
-              >
-                <span className={styles.sz}>{s.size}</span>
-                <span className={styles.pr}>
-                  {typeof s.priceCents === 'number'
-                    ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(s.priceCents / 100)
-                    : 'Preço sob consulta'}
-                </span>
-              </button>
-            ))}
+            {product.sizes.map((s) => {
+              const isSelected = selectedSizes.some((sel) => sel.size === s.size && sel.priceCents === s.priceCents);
+              return (
+                <button
+                  key={`${s.size}-${s.priceCents}`}
+                  type="button"
+                  className={`${styles.productSizeRow} ${isSelected ? styles.selected : ''}`}
+                  aria-pressed={isSelected}
+                  onClick={() => toggleSize(s)}
+                >
+                  <span className={styles.sz}>{s.size}</span>
+                  <span className={styles.pr}>
+                    {typeof s.priceCents === 'number'
+                      ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(s.priceCents / 100)
+                      : 'Preço sob consulta'}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         ) : (
           <p className={styles.productPriceNote}>
@@ -93,7 +105,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, whatsappNumbe
         <div className={styles.productFooter}>
           <a
             className={styles.whatsappLink}
-            href={buildWhatsAppUrl(whatsappNumber, buildProductMessage(product, product.sizes?.[0]))}
+            href={buildWhatsAppUrl(whatsappNumber, buildProductMessage(product, selectedSizes.length > 0 ? selectedSizes : product.sizes?.length ? [product.sizes[0]] : undefined))}
             target="_blank"
             rel="noopener noreferrer"
           >

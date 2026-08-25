@@ -12,7 +12,7 @@
 }
 
 .filtersWrap {
-  margin: 30px 0 46px;
+  margin: -14px 0 38px;
 }
 
 .catalogToolbar {
@@ -222,12 +222,13 @@
   margin-top: 10px;
   font-size: 13.5px;
   color: $text-muted;
-  flex: 1;
+  line-height: 1.4;
 }
 
 /* ── Tamanhos ─────────────────────────────────────────────────── */
 .productSizes {
-  margin-top: 12px;
+  margin-top: auto;
+  padding-top: 16px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -268,14 +269,19 @@
   &:hover {
     border-color: #b5bcc7;
   }
+
+  &.selected {
+    border-color: $gold;
+    background: rgba(108, 147, 199, 0.08);
+  }
 }
 
 /* ── Indicador de scroll (bolinha com seta) ────────────────────── */
 .productPriceNote {
   font-size: 13px;
   color: $text-muted;
-  margin-top: 12px;
-  flex: 1;
+  margin-top: auto;
+  padding-top: 16px;
 }
 
 .productFooter {

@@ -148,11 +148,13 @@ export const Catalog: React.FC<CatalogProps> = ({ catalogData, whatsapp }) => {
           description={catalogData.description}
         />
 
-        <FilterToolbar
-          categories={state.categories}
-          activeFilter={activeFilter}
-          onSelectFilter={setActiveFilter}
-        />
+        <div className={styles.filtersWrap}>
+          <FilterToolbar
+            categories={state.categories}
+            activeFilter={activeFilter}
+            onSelectFilter={setActiveFilter}
+          />
+        </div>
 
         <div className={styles.productGrid}>
           {filteredProducts.map((product) => (
