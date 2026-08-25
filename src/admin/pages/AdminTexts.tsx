@@ -206,7 +206,6 @@ const SECTIONS: SectionConfig[] = [
       { path: 'title', label: 'Título', type: 'text' },
       { path: 'description', label: 'Descrição', type: 'textarea' },
       { path: 'items', label: 'Cards de benefícios', type: 'array', arrayItemFields: [
-        { key: 'id', label: 'ID (único)', type: 'text' },
         { key: 'icon', label: 'Ícone (flask/layers/pocket/sparkles)', type: 'text' },
         { key: 'title', label: 'Título do card', type: 'text' },
         { key: 'description', label: 'Texto do card', type: 'textarea' },
@@ -246,13 +245,11 @@ const SECTIONS: SectionConfig[] = [
       { path: 'title', label: 'Título', type: 'text' },
       { path: 'description', label: 'Descrição (opcional)', type: 'textarea' },
       { path: 'steps', label: 'Passos', type: 'array', arrayItemFields: [
-        { key: 'id', label: 'ID', type: 'text' },
         { key: 'step', label: 'Número', type: 'text' },
         { key: 'title', label: 'Título do passo', type: 'text' },
         { key: 'text', label: 'Texto do passo', type: 'textarea' },
       ]},
       { path: 'trustItems', label: 'Itens de confiança', type: 'array', arrayItemFields: [
-        { key: 'id', label: 'ID', type: 'text' },
         { key: 'icon', label: 'Ícone (shield/award)', type: 'text' },
         { key: 'title', label: 'Título', type: 'text' },
         { key: 'description', label: 'Descrição', type: 'textarea' },
@@ -273,7 +270,6 @@ const SECTIONS: SectionConfig[] = [
       { path: 'eyebrow', label: 'Eyebrow', type: 'text' },
       { path: 'title', label: 'Título', type: 'text' },
       { path: 'items', label: 'Perguntas/Respostas', type: 'array', arrayItemFields: [
-        { key: 'id', label: 'ID', type: 'text' },
         { key: 'question', label: 'Pergunta', type: 'text' },
         { key: 'answer', label: 'Resposta', type: 'textarea' },
       ]},
@@ -438,7 +434,9 @@ export const AdminTexts: React.FC = () => {
                   if (field.type === 'array') {
                     const arrayValue = value as any[];
                     const isStringArray = arrayValue.length === 0 || arrayValue.every((i) => typeof i === 'string');
-                    const template: any = isStringArray ? '' : field.arrayItemFields?.reduce((acc, f) => ({ ...acc, [f.key]: '' }), {}) || {};
+                    const baseTemplate: any = isStringArray ? '' : field.arrayItemFields?.reduce((acc, f) => ({ ...acc, [f.key]: '' }), {}) || {};
+                    // Para arrays de objetos, injeta um id interno (não renderizado) para key do React
+                    const template = isStringArray ? '' : { id: `${section.key}-${field.path}-${Date.now()}`, ...baseTemplate };
 
                     return (
                       <div key={field.path} className={styles.arrayField}>
