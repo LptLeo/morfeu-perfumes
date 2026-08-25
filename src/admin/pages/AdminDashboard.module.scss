@@ -98,25 +98,88 @@
 
 .quickLinks {
   margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
-  button {
-    padding: 12px 20px;
-    border: 1px solid $sand;
-    border-radius: 999px;
-    background: #fff;
-    font-weight: 700;
-    font-size: 14.5px;
-    color: inherit;
-    cursor: pointer;
-    transition: border-color .15s ease, box-shadow .15s ease;
-
-    @media (max-width: 480px) {
-      width: 100%;
-    }
-
-    &:hover {
-      border-color: #b5bcc7;
-      box-shadow: 0 4px 14px rgba(31,41,51,.08);
-    }
+  @media (min-width: 640px) {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
+}
+
+.cardLink {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid $sand;
+  border-radius: $radius-m;
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, background 0.15s ease;
+  width: 100%;
+
+  @media (min-width: 640px) {
+    flex: 1;
+    min-width: 280px;
+  }
+
+  &:hover {
+    border-color: $gold;
+    box-shadow: 0 8px 24px rgba(108, 147, 199, 0.15);
+    transform: translateY(-2px);
+    background: rgba(175, 198, 232, 0.05);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(108, 147, 199, 0.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $gold;
+    outline-offset: 2px;
+  }
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(108, 147, 199, 0.1);
+  border: 1px solid rgba(175, 198, 232, 0.3);
+  border-radius: $radius-s;
+  color: $gold;
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.cardLink:hover .cardIcon {
+  background: $gold;
+  border-color: $gold;
+  color: #fff;
+}
+
+.cardTitle {
+  font-family: $font-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: $text-ink;
+}
+
+.cardDesc {
+  font-size: 13.5px;
+  color: $text-muted;
+  line-height: 1.5;
 }
