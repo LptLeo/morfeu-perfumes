@@ -12,7 +12,14 @@
 }
 
 .filtersWrap {
-  margin-bottom: 34px;
+  margin: 30px 0 46px;
+}
+
+.catalogToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
 .filterChip {

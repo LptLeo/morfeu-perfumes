@@ -16,6 +16,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ data }) => {
         <SectionHeading
           eyebrow={data.eyebrow}
           title={data.title}
+          description={data.description}
           isDark
         />
         <div className={styles.steps}>

@@ -115,6 +115,7 @@ export interface StoreData {
   howItWorks: {
     eyebrow: string;
     title: string;
+    description?: string;
     steps: StepItemData[];
     trustItems: TrustItemData[];
   };
