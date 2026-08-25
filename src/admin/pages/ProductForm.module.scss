@@ -291,16 +291,13 @@
     object-fit: cover;
     user-select: none;
     -webkit-user-drag: none;
+    pointer-events: none;
     transform-origin: center;
   }
 }
 
 .dragging {
   cursor: grabbing;
-
-  img {
-    pointer-events: none;
-  }
 }
 
 .focusGridH,
