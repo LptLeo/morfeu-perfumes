@@ -26,7 +26,7 @@ export interface ProductDoc {
   sizes: { size: string; priceCents: number }[];
   description: string | null;
   imageUrl: string | null;
-  imageFocus: { x: number; y: number; zoom: number } | null;
+  imageFocus: { x: number; y: number; zoom: number; fitMode?: 'cover' | 'contain' } | null;
   createdAt?: Timestamp | null;
   updatedAt?: Timestamp | null;
 }

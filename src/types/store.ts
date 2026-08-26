@@ -15,7 +15,7 @@ export interface Product {
   description: string | null;
   image: string | null; // compat: landing usa 'image'
   imageUrl: string | null;
-  imageFocus: { x: number; y: number; zoom: number } | null;
+  imageFocus: { x: number; y: number; zoom: number; fitMode?: 'cover' | 'contain' } | null;
 }
 
 /** Opção de categoria para UI (mantido para compatibilidade) */
@@ -60,7 +60,7 @@ export interface FaqItemData {
 
 export interface ImageWithFocus {
   url: string | null;
-  focus?: { x: number; y: number; zoom: number } | null;
+  focus?: { x: number; y: number; zoom: number; fitMode?: 'cover' | 'contain' } | null;
 }
 
 export interface StoreInfo {

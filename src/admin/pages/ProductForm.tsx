@@ -53,6 +53,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
 
   const [imageUrl, setImageUrl] = useState<string | null>(product?.imageUrl ?? null);
   const [imageFocus, setImageFocus] = useState<FocusValue | null>(product?.imageFocus ?? null);
+  const [fitMode, setFitMode] = useState<'cover' | 'contain'>(product?.imageFocus?.fitMode ?? 'contain');
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -92,6 +93,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
     objectUrlRef.current = url;
     setPreviewUrl(url);
     setImageFocus(null); // nova foto → enquadramento zerado
+    setFitMode('contain'); // nova foto → modo padrão
   };
 
   const removeImage = () => {
@@ -99,6 +101,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
     setPreviewUrl(null);
     setImageUrl(null);
     setImageFocus(null);
+    setFitMode('contain');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -210,7 +213,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
         })),
         description: description.trim() ? description.trim() : null,
         imageUrl: finalUrl,
-        imageFocus: finalUrl ? imageFocus : null,
+        imageFocus: finalUrl && imageFocus
+          ? { ...imageFocus, fitMode }
+          : finalUrl
+            ? { x: 0.5, y: 0.5, zoom: 1, fitMode }
+            : null,
       };
 
       if (editing && product) {
@@ -413,6 +420,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, categories: c
                 value={imageFocus}
                 onChange={setImageFocus}
                 aspectRatio="4/5"
+                fitMode={fitMode}
+                onFitModeChange={setFitMode}
               />
             </>
           )}

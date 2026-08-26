@@ -4,7 +4,8 @@ import styles from './ProductForm.module.scss';
 export interface FocusValue {
   x: number; // 0..1 — object-position horizontal
   y: number; // 0..1 — object-position vertical
-  zoom: number; // 1..3
+  zoom: number; // 0.5..3
+  fitMode?: 'cover' | 'contain'; // modo de preenchimento
 }
 
 interface FocusEditorProps {
@@ -12,6 +13,8 @@ interface FocusEditorProps {
   value: FocusValue | null;
   onChange: (value: FocusValue) => void;
   aspectRatio?: string; // "4/5" | "1/1" | "16/9"
+  fitMode?: 'cover' | 'contain';
+  onFitModeChange?: (mode: 'cover' | 'contain') => void;
 }
 
 /**
@@ -25,6 +28,8 @@ export const FocusEditor: React.FC<FocusEditorProps> = ({
   value,
   onChange,
   aspectRatio = '4/5',
+  fitMode = 'contain',
+  onFitModeChange,
 }) => {
   const [dragging, setDragging] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -115,7 +120,7 @@ export const FocusEditor: React.FC<FocusEditorProps> = ({
   };
 
   const onZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextZoom = Math.max(1, Math.min(3, Number(e.target.value)));
+    const nextZoom = Math.max(0.5, Math.min(3, Number(e.target.value)));
     const next = { ...focusRef.current, zoom: nextZoom };
     focusRef.current = next;
     setFocus(next);
@@ -132,6 +137,7 @@ export const FocusEditor: React.FC<FocusEditorProps> = ({
   const imgStyle: React.CSSProperties = {
     objectPosition: `${focus.x * 100}% ${focus.y * 100}%`,
     transform: `scale(${focus.zoom})`,
+    objectFit: focus.zoom < 1 ? 'contain' : (fitMode ?? 'contain'),
   };
 
   return (
@@ -164,7 +170,7 @@ export const FocusEditor: React.FC<FocusEditorProps> = ({
         <input
           id="focus-zoom"
           type="range"
-          min={1}
+          min={0.5}
           max={3}
           step={0.05}
           value={focus.zoom}
@@ -173,6 +179,16 @@ export const FocusEditor: React.FC<FocusEditorProps> = ({
         <button type="button" className={styles.resetBtn} onClick={onReset}>
           Centralizar
         </button>
+        {onFitModeChange && (
+          <label className={styles.fitModeToggle}>
+            <input
+              type="checkbox"
+              checked={fitMode === 'cover'}
+              onChange={(e) => onFitModeChange(e.target.checked ? 'cover' : 'contain')}
+            />
+            <span>Cobrir frame (corta bordas)</span>
+          </label>
+        )}
       </div>
       <p className={styles.focusHint}>
         Arraste a foto para escolher qual parte aparece no catálogo.

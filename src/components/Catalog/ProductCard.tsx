@@ -37,7 +37,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, whatsappNumbe
             alt={`${product.name} — ${product.brand}`}
             loading="lazy"
             style={{
-              objectFit: 'cover',
+              objectFit:
+                product.imageFocus?.zoom && product.imageFocus.zoom < 1
+                  ? 'contain'
+                  : product.imageFocus?.fitMode ?? 'contain',
               objectPosition:
                 product.imageFocus
                   ? `${product.imageFocus.x * 100}% ${product.imageFocus.y * 100}%`

@@ -172,18 +172,22 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onEdit, onCreate }
           {filtered.map((p) => (
             <li key={p.id} className={styles.row}>
               <span className={styles.thumb}>
-                {p.imageUrl ? (
-                  <img
-                    src={p.imageUrl}
-                    alt=""
-                    loading="lazy"
-                    style={{
-                      objectPosition: p.imageFocus
-                        ? `${p.imageFocus.x * 100}% ${p.imageFocus.y * 100}%`
-                        : 'center',
-                      transform: p.imageFocus?.zoom ? `scale(${p.imageFocus.zoom})` : undefined,
-                    }}
-                  />
+{p.imageUrl ? (
+                    <img
+                      src={p.imageUrl}
+                      alt=""
+                      loading="lazy"
+                      style={{
+                        objectFit:
+                          p.imageFocus?.zoom && p.imageFocus.zoom < 1
+                            ? 'contain'
+                            : p.imageFocus?.fitMode ?? 'contain',
+                        objectPosition: p.imageFocus
+                          ? `${p.imageFocus.x * 100}% ${p.imageFocus.y * 100}%`
+                          : 'center',
+                        transform: p.imageFocus?.zoom ? `scale(${p.imageFocus.zoom})` : undefined,
+                      }}
+                    />
                 ) : (
                   <span aria-hidden="true">—</span>
                 )}
