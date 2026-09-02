@@ -168,6 +168,64 @@ h1 {
   }
 }
 
+// ── Exemplificador (preview) da mensagem ao encomendar ────────────────
+.templatePreview {
+  margin-top: 6px;
+  border: 1px dashed $sand;
+  border-radius: $radius-s;
+  background: rgba(108, 147, 199, 0.04);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .templatePreviewTitle {
+    font-size: 12px;
+    font-weight: 700;
+    color: $text-muted;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .templatePreviewEmpty {
+    font-size: 13px;
+    font-style: italic;
+    color: $text-muted;
+  }
+
+  .templatePreviewRow {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .templatePreviewTag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8a7a4b;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .templatePreviewText {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: $text-ink;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+.tokenUnknown {
+  background: rgba(236, 164, 32, 0.18);
+  color: #9a6b00;
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 // ── Upload de imagem com enquadramento ────────────────────────────────
 .imageUpload {
   display: flex;

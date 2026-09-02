@@ -89,28 +89,6 @@ export async function deleteProduct(id: string): Promise<void> {
   await deleteDoc(doc(db, 'products', id));
 }
 
-/**
- * Importa catálogo inicial (dataset embutido pós-migração).
- * Visível apenas quando a coleção está vazia; some após sucesso.
- * Preserva os slugs originais como IDs dos documentos.
- * Retorna quantidade importada.
- */
-export async function importCatalog(items: SeedItem[]): Promise<number> {
-  const db = getDb();
-  let count = 0;
-  for (const { seedId, ...data } of items) {
-    await setDoc(doc(db, 'products', seedId), {
-      ...data,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
-    count++;
-  }
-  return count;
-}
-
-export type SeedItem = ProductDoc & { seedId: string };
-
 // ── helpers ────────────────────────────────────────────────────────────
 
 export function slugify(name: string): string {

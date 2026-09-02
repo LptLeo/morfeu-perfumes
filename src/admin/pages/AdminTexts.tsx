@@ -3,11 +3,15 @@ import { Button } from '@/components/ui/Button';
 import { navigate } from '../router';
 import { getSiteTexts, saveSiteTexts, type SiteTexts } from '../textsService';
 import { getFirebaseAuth } from '@/lib/firebase';
+import { fillMessageTemplate, type WhatsAppMessageFills } from '@/utils/whatsapp';
 import { FocusEditor } from './FocusEditor';
 import styles from './AdminTexts.module.scss';
 
 interface SectionConfig {
-  key: keyof SiteTexts;
+  /** Identificador único da seção (usado como key do React). */
+  key: string;
+  /** Onde os dados vivem dentro de SiteTexts. Default: o próprio section.key. */
+  dataKey?: keyof SiteTexts;
   label: string;
   icon: React.ReactNode;
   fields: Array<{
@@ -15,6 +19,12 @@ interface SectionConfig {
     label: string;
     type: 'text' | 'textarea' | 'array' | 'image' | 'headerLogo';
     arrayItemFields?: Array<{ key: string; label: string; type: 'text' | 'textarea' }>;
+    /** Se true, o input mantém apenas dígitos (ex.: número de WhatsApp). */
+    sanitizeDigits?: boolean;
+    /** Se true, o input aplica máscara progressiva de telefone brasileiro (ex.: WhatsApp). */
+    phoneMask?: boolean;
+    /** Dica exibida abaixo do campo. */
+    hint?: string;
   }>;
 }
 
@@ -173,6 +183,29 @@ const SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    key: 'contato',
+    dataKey: 'storeInfo',
+    label: 'Contato',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+        <line x1="12" y1="18" x2="12.01" y2="18" />
+      </svg>
+    ),
+    fields: [
+      { path: 'sellerName', label: 'Nome do(a) atendente', type: 'text' },
+      { path: 'whatsapp.number', label: 'Número do WhatsApp (máscara brasileira; DDI 55 é salvo automaticamente)', type: 'text', phoneMask: true },
+      { path: 'whatsapp.defaultMessage', label: 'Mensagem padrão dos botões', type: 'textarea' },
+      { path: 'whatsapp.suggestionMessage', label: 'Mensagem de sugestão de perfume', type: 'textarea' },
+      {
+        path: 'whatsapp.productMessage',
+        label: 'Mensagem ao encomendar (template)',
+        type: 'textarea',
+        hint: 'Use os marcadores {Qtde em ml}, {Produto}, {Marca} e {Preço}. Vazio = mensagem padrão. Ex.: "Olá! Quero pedir um decant de {Produto}{Marca} com {Qtde em ml}."',
+      },
+    ],
+  },
+  {
     key: 'hero',
     label: 'Hero (Início)',
     icon: (
@@ -296,6 +329,121 @@ const SECTIONS: SectionConfig[] = [
   },
 ];
 
+/**
+ * Converte o valor do campo de telefone (E.164 salvo ou sequência local digitada)
+ * para os dígitos locais (sem DDI 55), prontos para a máscara.
+ */
+function localPhoneDigits(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  if (digits.length === 13 && digits.startsWith('55')) {
+    return digits.slice(2);
+  }
+  return digits.slice(0, 11);
+}
+
+/**
+ * Aplica máscara brasileira progressiva de telefone/celular,
+ * ex.: "" → "(D" → "(DD)" → "(DD) N..." → "(DD) 9XXXX-XXXX".
+ */
+function maskPhone(raw: string): string {
+  const d = localPhoneDigits(raw);
+  if (!d) return '';
+  if (d.length <= 2) return `(${d}`;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+}
+
+/** Exemplos usados no exemplificador (preview) da mensagem ao encomendar. */
+const EXAMPLE_FILLS: WhatsAppMessageFills = {
+  'Qtde em ml': '3ml',
+  Produto: 'Le Male Elixir',
+  Marca: ' (Jean Paul Gaultier)',
+  Preço: 'R$ 40,00',
+};
+
+/**
+ * Renderiza o texto preenchido destacando os placeholders não reconhecidos
+ * (ex.: digitação errada de {qdte em ml}) em âmbar.
+ */
+function renderTemplatePreview(template: string): React.ReactNode[] {
+  const parts = template.split(/(\{[^}]+\})/g);
+  return parts.map((part, i) => {
+    if (!part) return null;
+    const m = part.match(/^\{([^}]+)\}$/);
+    if (m) {
+      const key = m[1];
+      const filled = EXAMPLE_FILLS[key];
+      if (filled !== undefined) {
+        return <React.Fragment key={i}>{filled}</React.Fragment>;
+      }
+      return (
+        <span key={i} className={styles.tokenUnknown}>
+          {part}
+        </span>
+      );
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
+
+const PRODUCT_MSG_SCENARIOS: Array<{ id: string; label: string; sizes: { size: string; priceCents: number }[] }> = [
+  { id: 'one', label: '1 tamanho selecionado', sizes: [{ size: '3ml', priceCents: 4000 }] },
+  {
+    id: 'many',
+    label: 'Vários tamanhos',
+    sizes: [
+      { size: '3ml', priceCents: 4000 },
+      { size: '5ml', priceCents: 6000 },
+      { size: '10ml', priceCents: 10000 },
+    ],
+  },
+  { id: 'none', label: 'Sem tamanho / sob consulta', sizes: [] },
+];
+
+/** Preenche o template com os valores de exemplo de um cenário. */
+function fillProductPreview(template: string, sizes: { size: string; priceCents: number }[]): string {
+  const brand = ' (Jean Paul Gaultier)';
+  const sizeList = sizes.map((s) => s.size);
+  const priceList = sizes.map((s) =>
+    typeof s.priceCents === 'number' ? formatPreviewPrice(s.priceCents) : 'sob consulta'
+  );
+  return fillMessageTemplate(template, {
+    'Qtde em ml': sizeList.length > 0 ? sizeList.join(', ') : 'sob consulta',
+    Produto: 'Le Male Elixir',
+    Marca: brand,
+    Preço: priceList.length > 0 ? priceList.join(', ') : 'sob consulta',
+  });
+}
+
+function formatPreviewPrice(cents: number): string {
+  return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+/** Exemplificador (preview em tempo real) da mensagem ao encomendar. */
+const ProductMessagePreview: React.FC<{ template: string }> = ({ template }) => {
+  const isEmpty = !template || !template.trim();
+  return (
+    <div className={styles.templatePreview}>
+      <span className={styles.templatePreviewTitle}>Exemplo de como a mensagem chega ao cliente:</span>
+      {isEmpty ? (
+        <div className={styles.templatePreviewEmpty}>
+          Campo vazio — será usada a mensagem padrão do site.
+        </div>
+      ) : (
+        PRODUCT_MSG_SCENARIOS.map((scenario) => (
+          <div key={scenario.id} className={styles.templatePreviewRow}>
+            <span className={styles.templatePreviewTag}>{scenario.label}</span>
+            <p className={styles.templatePreviewText}>
+              {renderTemplatePreview(fillProductPreview(template, scenario.sizes))}
+            </p>
+          </div>
+        ))
+      )}
+    </div>
+  );
+};
+
 export const AdminTexts: React.FC = () => {
   const [texts, setTexts] = useState<SiteTexts | null>(null);
   const [loading, setLoading] = useState(true);
@@ -331,9 +479,12 @@ export const AdminTexts: React.FC = () => {
     return newObj;
   };
 
-  const handleChange = (sectionKey: keyof SiteTexts, fieldPath: string, value: any) => {
+  const handleChange = (sectionKey: keyof SiteTexts, fieldPath: string, value: any, sanitizeDigits?: boolean, phoneMask?: boolean) => {
     if (!texts) return;
-    const newTexts = setNestedValue(texts, `${sectionKey}.${fieldPath}`, value);
+    let nextValue = value;
+    if (sanitizeDigits) nextValue = String(value).replace(/\D/g, '');
+    if (phoneMask) nextValue = localPhoneDigits(String(value));
+    const newTexts = setNestedValue(texts, `${sectionKey}.${fieldPath}`, nextValue);
     setTexts(newTexts);
   };
 
@@ -371,7 +522,15 @@ export const AdminTexts: React.FC = () => {
     setSaving(true);
     setMessage(null);
     try {
-      await saveSiteTexts(texts);
+      // Garante que o número do WhatsApp seja salvo em E.164 (DDI 55 + número local),
+      // que é o formato esperado pelo buildWhatsAppUrl (wa.me).
+      let toSave = texts;
+      const number = getNestedValue(toSave, 'storeInfo.whatsapp.number');
+      if (typeof number === 'string') {
+        const local = localPhoneDigits(number);
+        toSave = setNestedValue(toSave, 'storeInfo.whatsapp.number', local ? `55${local}` : '');
+      }
+      await saveSiteTexts(toSave);
       setMessage({ type: 'success', text: 'Textos salvos com sucesso!' });
     } catch (error) {
       setMessage({ type: 'error', text: 'Erro ao salvar textos' });
@@ -420,7 +579,8 @@ export const AdminTexts: React.FC = () => {
 
       <main className={styles.content}>
         {SECTIONS.map((section) => {
-          const sectionData = texts[section.key];
+          const dataKey = section.dataKey ?? (section.key as keyof SiteTexts);
+          const sectionData = texts[dataKey];
           return (
             <section key={section.key} className={styles.section}>
               <header className={styles.sectionHeader}>
@@ -451,7 +611,7 @@ export const AdminTexts: React.FC = () => {
                                   <input
                                     type="text"
                                     value={typeof item === 'string' ? item : ''}
-                                    onChange={(e) => handleArrayChange(section.key, field.path, idx, '', e.target.value)}
+                                    onChange={(e) => handleArrayChange(dataKey, field.path, idx, '', e.target.value)}
                                     className={styles.input}
                                   />
                                 </div>
@@ -462,7 +622,7 @@ export const AdminTexts: React.FC = () => {
                                     {itemField.type === 'textarea' ? (
                                       <textarea
                                         value={item[itemField.key] || ''}
-                                        onChange={(e) => handleArrayChange(section.key, field.path, idx, itemField.key, e.target.value)}
+                                        onChange={(e) => handleArrayChange(dataKey, field.path, idx, itemField.key, e.target.value)}
                                         rows={3}
                                         className={styles.input}
                                       />
@@ -470,7 +630,7 @@ export const AdminTexts: React.FC = () => {
                                       <input
                                         type="text"
                                         value={item[itemField.key] || ''}
-                                        onChange={(e) => handleArrayChange(section.key, field.path, idx, itemField.key, e.target.value)}
+                                        onChange={(e) => handleArrayChange(dataKey, field.path, idx, itemField.key, e.target.value)}
                                         className={styles.input}
                                       />
                                     )}
@@ -480,7 +640,7 @@ export const AdminTexts: React.FC = () => {
                               <button
                                 type="button"
                                 className={styles.removeItemBtn}
-                                onClick={() => handleArrayRemove(section.key, field.path, idx)}
+                                onClick={() => handleArrayRemove(dataKey, field.path, idx)}
                                 aria-label={`Remover item ${idx + 1}`}
                               >
                                 ×
@@ -491,7 +651,7 @@ export const AdminTexts: React.FC = () => {
                         <button
                           type="button"
                           className={styles.addItemBtn}
-                          onClick={() => handleArrayAdd(section.key, field.path, template)}
+                          onClick={() => handleArrayAdd(dataKey, field.path, template)}
                         >
                           + Adicionar item
                         </button>
@@ -507,7 +667,7 @@ export const AdminTexts: React.FC = () => {
                         <ImageUploadWithFocus
                           imageUrl={imageData?.url ?? ''}
                           focus={imageData?.focus ?? { x: 0.5, y: 0.5, zoom: 1 }}
-                          onChange={(newImage) => handleImageChange(section.key, field.path, newImage)}
+                          onChange={(newImage) => handleImageChange(dataKey, field.path, newImage)}
                           aspectRatio="4/5"
                         />
                       </div>
@@ -522,7 +682,7 @@ export const AdminTexts: React.FC = () => {
                         <ImageUploadWithFocus
                           imageUrl={logoData?.url ?? '/favicon.svg'}
                           focus={logoData?.focus ?? { x: 0.5, y: 0.5, zoom: 1 }}
-                          onChange={(newImage) => handleImageChange(section.key, field.path, newImage)}
+                          onChange={(newImage) => handleImageChange(dataKey, field.path, newImage)}
                           aspectRatio="1/1"
                         />
                       </div>
@@ -535,17 +695,22 @@ export const AdminTexts: React.FC = () => {
                       {field.type === 'textarea' ? (
                         <textarea
                           value={value || ''}
-                          onChange={(e) => handleChange(section.key, field.path, e.target.value)}
+                          onChange={(e) => handleChange(dataKey, field.path, e.target.value)}
                           rows={3}
                           className={styles.input}
                         />
                       ) : (
                         <input
                           type="text"
-                          value={value || ''}
-                          onChange={(e) => handleChange(section.key, field.path, e.target.value)}
+                          value={field.phoneMask ? maskPhone(value || '') : (value || '')}
+                          onChange={(e) => handleChange(dataKey, field.path, e.target.value, field.sanitizeDigits, field.phoneMask)}
+                          placeholder={field.phoneMask ? '(00) 00000-0000' : undefined}
                           className={styles.input}
                         />
+                      )}
+                      {field.hint && <div className={styles.fieldHint}>{field.hint}</div>}
+                      {field.path === 'whatsapp.productMessage' && (
+                        <ProductMessagePreview template={value || ''} />
                       )}
                     </div>
                   );
