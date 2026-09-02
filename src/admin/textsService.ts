@@ -71,7 +71,7 @@ export const defaultSiteTexts: SiteTexts = {
     categories: [
       { id: 'todos', label: 'Todos' },
       { id: 'importado', label: 'Importados' },
-      { id: 'arabe', label: 'Árabes & contratipos' },
+      { id: 'contratipo', label: 'Contratipos' },
       { id: 'nacional', label: 'Nacionais' },
     ],
     fallbackNote: {

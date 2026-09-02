@@ -3,12 +3,10 @@ import { Button } from '@/components/ui/Button';
 import {
   listAdminProducts,
   deleteProduct,
-  importCatalog,
   type AdminProduct,
 } from '../productsService';
 import { logout } from '../auth';
 import { navigate } from '../router';
-import seedData from '@/data/storeData.json';
 import styles from './AdminProducts.module.scss';
 
 interface AdminProductsProps {
@@ -26,7 +24,6 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onEdit, onCreate }
   const [state, setState] = useState<State>({ status: 'loading' });
   const [search, setSearch] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [importing, setImporting] = useState(false);
 
   const load = useCallback(async () => {
     setState({ status: 'loading' });
@@ -55,42 +52,6 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onEdit, onCreate }
       window.alert(err instanceof Error ? err.message : 'Falha ao excluir.');
     } finally {
       setDeleting(null);
-    }
-  };
-
-  /** Botão temporário: importa o dataset embutido quando a coleção está vazia. */
-  const handleImport = async () => {
-    if (
-      !window.confirm(
-        `Importar ${seedData.products.length} produtos do catálogo inicial para o Firestore?`
-      )
-    )
-      return;
-    setImporting(true);
-    try {
-      const items = (seedData.products as Array<{
-        id: string; name: string; brand: string; category: string;
-        genero: 'masculino' | 'feminino' | 'unissex';
-        sizes: { size: string; priceCents: number }[];
-        description: string | null; imageUrl: string | null;
-      }>).map((p) => ({
-        seedId: p.id,
-        name: p.name,
-        brand: p.brand,
-        category: p.category,
-        genero: p.genero,
-        sizes: p.sizes.map((s) => ({ size: s.size, priceCents: s.priceCents })),
-        description: p.description,
-        imageUrl: p.imageUrl,
-        imageFocus: null,
-      }));
-      const count = await importCatalog(items);
-      window.alert(`${count} produtos importados com sucesso.`);
-      await load();
-    } catch (err) {
-      window.alert(err instanceof Error ? err.message : 'Falha na importação.');
-    } finally {
-      setImporting(false);
     }
   };
 
@@ -124,13 +85,10 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ onEdit, onCreate }
         <div className={styles.emptyBox}>
           <h2>Coleção vazia</h2>
           <p>
-            Nenhum produto no Firestore ainda. Importe o catálogo inicial (24 produtos já
-            migrados para a imgbb) ou cadastre o primeiro manualmente.
+            Nenhum produto no Firestore ainda. Cadastre o primeiro perfume manualmente para
+            começar o catálogo.
           </p>
           <div className={styles.emptyActions}>
-            <Button onClick={handleImport} disabled={importing}>
-              {importing ? 'Importando…' : 'Importar catálogo inicial'}
-            </Button>
             <Button variant="outline" onClick={onCreate}>
               Cadastrar manualmente
             </Button>

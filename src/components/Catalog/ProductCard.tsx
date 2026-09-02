@@ -15,9 +15,10 @@ function getInitials(name: string): string {
 interface ProductCardProps {
   product: Product;
   whatsappNumber: string;
+  productMessageTemplate?: string;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, whatsappNumber }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, whatsappNumber, productMessageTemplate }) => {
   const [selectedSizes, setSelectedSizes] = useState<ProductSize[]>([]);
 
   const toggleSize = (size: ProductSize) => {
@@ -108,7 +109,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, whatsappNumbe
         <div className={styles.productFooter}>
           <a
             className={styles.whatsappLink}
-            href={buildWhatsAppUrl(whatsappNumber, buildProductMessage(product, selectedSizes.length > 0 ? selectedSizes : product.sizes?.length ? [product.sizes[0]] : undefined))}
+            href={buildWhatsAppUrl(whatsappNumber, buildProductMessage(product, selectedSizes.length > 0 ? selectedSizes : product.sizes?.length ? [product.sizes[0]] : undefined, productMessageTemplate))}
             target="_blank"
             rel="noopener noreferrer"
           >

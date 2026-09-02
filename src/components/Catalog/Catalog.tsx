@@ -15,7 +15,7 @@ interface CatalogProps {
     description: string;
     fallbackNote: { title: string; description: string; ctaText: string };
   };
-  whatsapp: { number: string; suggestionMessage: string };
+  whatsapp: { number: string; suggestionMessage: string; productMessage?: string };
 }
 
 interface State {
@@ -162,6 +162,7 @@ export const Catalog: React.FC<CatalogProps> = ({ catalogData, whatsapp }) => {
               key={product.id}
               product={product}
               whatsappNumber={whatsapp.number}
+              productMessageTemplate={whatsapp.productMessage}
             />
           ))}
         </div>

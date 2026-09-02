@@ -74,6 +74,8 @@ export interface StoreInfo {
     number: string;
     defaultMessage: string;
     suggestionMessage: string;
+    /** Template da mensagem ao encomendar um produto (placeholders {Qtde em ml}, {Produto}, {Marca}, {Preço}). */
+    productMessage?: string;
   };
   sellerName: string;
   logo?: ImageWithFocus; // Header logo with focus support
@@ -111,7 +113,6 @@ export interface StoreData {
       ctaText: string;
     };
   };
-  products: Product[];
   howItWorks: {
     eyebrow: string;
     title: string;
